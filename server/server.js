@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors"); // added
 
-// Asegúrate de importar correctamente connectDB
 const { connectDB } = require("./config/db");
 
 const app = express();
@@ -12,7 +11,7 @@ const app = express();
 const todo = require("./routes/todo");
 
 // connect database
-connectDB(); // Esta función ahora conecta a MySQL
+connectDB(); 
 
 // cors
 app.use(cors({ origin: true, credentials: true })); // added
