@@ -1,31 +1,33 @@
-// server.js
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors"); // added
+const cors = require("cors");
 
 const { connectDB } = require("./config/db");
 
 const app = express();
 
-// routes
+app.use(cors({
+  origin: "https://", 
+  credentials: true, 
+}));
+
+// Rutas
 const todo = require("./routes/todo");
 
-// connect database
-connectDB(); 
+// Conectar a la base de datos
+connectDB(); // Conecta a MySQL
 
-// cors
-app.use(cors({ origin: true, credentials: true })); // added
-
-// initialize middleware
+// Middleware
 app.use(express.json({ extended: false }));
 app.get("/", (req, res) => res.send("Server up and running"));
 
-// use routes
+// Usar rutas
 app.use("/api/todo", todo);
 
-// setting up port
+// Establecer puerto
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
-    console.log(`server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
+
