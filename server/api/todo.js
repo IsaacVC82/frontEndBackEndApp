@@ -1,38 +1,22 @@
-const express = require('express');
-const app = express();
-const PORT = 8000;
+const { connectDB } = require("../config/db");
 
-// Middleware para analizar JSON
-app.use(express.json());
+// Función para manejar las solicitudes
+export default async function handler(req, res) {
+  // Conecta a la base de datos
+  const db = await connectDB();
 
-// Ruta API de ejemplo
-app.get('/api/todo', (req, res) => {
-  res.json({ todos: [] }); // Devuelve una lista vacía de tareas por ahora
-});
-
-// Ruta para crear un TODO
-app.post('/api/todo', (req, res) => {
-  const { title } = req.body;
-  if (!title) {
-    return res.status(400).json({ error: 'El título es obligatorio' });
+  // Manejo de métodos
+  if (req.method === "GET") {
+    const todos = await db.query("SELECT * FROM todos");
+    return res.status(200).json(todos);
+  } else if (req.method === "POST") {
+    const { title, description } = req.body;
+    await db.query("INSERT INTO todos (title, description) VALUES (?, ?)", [
+      title,
+      description,
+    ]);
+    return res.status(201).json({ message: "Todo creado" });
+  } else {
+    return res.status(405).json({ message: "Método no permitido" });
   }
-  res.status(201).json({ message: 'TODO creado', todo: { title } });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-axios.get('http://localhost:8000/api/todo')
-  .then((response) => {
-    console.log(response.data);
-  })
-  .catch((error) => {
-    console.error('Error al obtener TODOs:', error.message);
-  });
-  axios.post('http://localhost:8000/api/todo', { title: 'Nuevo TODO' })
-  .then((response) => {
-    console.log('TODO creado:', response.data);
-  })
-  .catch((error) => {
-    console.error('Error al crear TODO:', error.message);
-  });
+}
