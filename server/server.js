@@ -1,34 +1,32 @@
-
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors"); 
-
-
-const { connectDB } = require("./config/db");
-
+const { connectDB } = require("./config/db"); 
 const app = express();
 
+// Conectar a la base de datos
+connectDB();
 
-const allowedOrigins = ['https://limegreen-gorilla-284669.hostingersite.com/create-todo']; 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({
+    origin: 'https://tu-dominio-frontend.com', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+}));
 
-// Conexión a la base de datos
-connectDB(); // Esta función conecta a MySQL
-
-// Rutas
-const todo = require("./routes/todo");
-
-// Inicializa middleware
+// Middleware para analizar JSON
 app.use(express.json({ extended: false }));
+
+// Ruta raíz
 app.get("/", (req, res) => res.send("Server up and running"));
 
-// Utiliza las rutas
+// Rutas de la API
+const todo = require("./routes/todo");
 app.use("/api/todo", todo);
 
-// Puerto de la aplicación
+// Configuración del puerto
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
