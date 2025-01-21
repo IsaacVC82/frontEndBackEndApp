@@ -8,7 +8,7 @@ const app = express();
 connectDB();
 
 app.use(cors({
-    origin: 'https://tu-dominio-frontend.com', 
+    origin: 'https://limegreen-gorilla-284669.hostingersite.com/', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
