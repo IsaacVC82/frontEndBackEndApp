@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/todo', (req, res) => {
   const { title, description } = req.body;
 
-  const query = 'INSERT INTO todos (title, description) VALUES (?, ?)';
+  const query = 'INSERT INTO todos (title, description, date, priority, done) VALUES (?, ? ,? ,? ,?)';
   
   db.query(query, [title, description], (err, result) => {
     if (err) {
