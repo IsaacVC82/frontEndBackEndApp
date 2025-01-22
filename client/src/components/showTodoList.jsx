@@ -35,7 +35,7 @@ export function ShowTodoList() {
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_API_URL}/todo`)
+            .get(`${process.env.REACT_APP_API_URL}todo`)
             .then((res) => {
                 console.log(res.data);
                 setTodos(res.data);
