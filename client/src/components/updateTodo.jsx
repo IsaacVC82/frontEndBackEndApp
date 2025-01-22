@@ -13,7 +13,7 @@ export function UpdateTodo({ id, handleClose, handleEdited }) {
     // Cargar datos existentes de la tarea al abrir el formulario
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_API_URL}/api/todo/${id}`)
+            .get(`${process.env.REACT_APP_API_URL}todo/${id}`)
             .then((res) => {
                 setData(res.data); 
             })
