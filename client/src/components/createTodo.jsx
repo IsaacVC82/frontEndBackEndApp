@@ -37,7 +37,7 @@ export function CreateTodo() {
         };
 
         axios
-            .post(`${process.env.REACT_APP_API_URL}/todo`, todo)
+            .post(`${process.env.REACT_APP_API_URL}todo`, todo)
             .then((res) => {
                 setData({
                     title: "",
