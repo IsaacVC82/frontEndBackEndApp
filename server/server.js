@@ -1,33 +1,37 @@
 const express = require('express');
-const cors = require('cors');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
+// Configuración de la aplicación
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Conexión a la base de datos
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log('Conexión a MongoDB exitosa'))
-    .catch((err) => console.error('Error al conectar con la base de datos:', err));
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Configuración de CORS
-const corsOptions = {
-    origin: ['https://back-end-front-end-app.vercel.app'], 
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeceras permitidas
-    credentials: true, // Permitir cookies/sesiones
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('Conexión a MongoDB exitosa');
+    } catch (err) {
+        console.error('Error al conectar con MongoDB:', err);
+        process.exit(1); // Detener la aplicación si no se puede conectar
+    }
 };
 
-app.use(cors(corsOptions));
+const corsOptions = {
+    origin: 'https://back-end-front-end-app-g621.vercel.app',  
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+};
 
-// Definición del modelo
+app.use(cors(corsOptions)); 
+
+// Middleware para procesar el cuerpo de las solicitudes
+app.use(express.json());
+
+// Modelo de datos
 const todoSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -38,11 +42,11 @@ const todoSchema = new mongoose.Schema({
 
 const Todo = mongoose.model('Todo', todoSchema);
 
-// Rutas
+// Rutas de la API
 app.get('/api/todo', async (req, res) => {
     try {
         const todos = await Todo.find();
-        res.json(todos);
+        res.status(200).json(todos);
     } catch (err) {
         console.error('Error al obtener TODOs:', err);
         res.status(500).json({ message: 'Error al obtener TODOs' });
@@ -84,7 +88,9 @@ app.delete('/api/todo/:id', async (req, res) => {
     }
 });
 
-// Inicio del servidor
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// Inicializar la conexión a la base de datos y arrancar el servidor
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
 });
