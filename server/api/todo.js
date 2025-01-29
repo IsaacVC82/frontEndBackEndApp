@@ -1,74 +1,81 @@
-const mongoose = require('mongoose');
+const express = require('express');
+const Todo = require('../models/todo');
+const router = express.Router();
 
-// Conexión a la base de datos 
-const connectDB = async () => {
+// Obtener todos los TODOs (con paginación)
+router.get('/', async (req, res) => {
     try {
-        if (mongoose.connection.readyState === 0) {
-            await mongoose.connect(process.env.MONGODB_URI, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });
-            console.log('Conexión a MongoDB Atlas exitosa');
-        }
+        const { page = 1, limit = 10 } = req.query;
+        const todos = await Todo.find()
+            .skip((page - 1) * limit)
+            .limit(Number(limit));
+        res.status(200).json(todos);
     } catch (err) {
-        console.error('Error al conectar con MongoDB:', err);
-        process.exit(1); // Detener la aplicación si no se puede conectar
+        console.error('Error al obtener TODOs:', err);
+        res.status(500).json({ message: 'Error al obtener TODOs' });
     }
-};
-
-// Modelo de datos
-const todoSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    date: { type: Date, default: Date.now },
-    priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Low' },
-    done: { type: Boolean, default: false },
 });
 
-const Todo = mongoose.model('Todo', todoSchema);
-
-// Handler de la API
-module.exports = async function handler(req, res) {
-    await connectDB(); 
-
+// Crear un nuevo TODO
+router.post('/', async (req, res) => {
     try {
-        if (req.method === 'GET') {
-            const todos = await Todo.find();
-            res.status(200).json(todos);
-        } else if (req.method === 'POST') {
-            const { title, description, date, priority, done } = req.body;
+        const { title, description, date, priority, done } = req.body;
 
-            if (!title || !description) {
-                return res.status(400).json({ message: 'Todos los campos requeridos deben ser completados.' });
-            }
-
-            const newTodo = new Todo({ title, description, date, priority, done });
-            await newTodo.save();
-            res.status(201).json({ message: 'TODO creado exitosamente' });
-        } else if (req.method === 'PUT') {
-            const { id } = req.query;
-            const { title, description, date, priority, done } = req.body;
-
-            if (!id) {
-                return res.status(400).json({ message: 'El ID es requerido para actualizar.' });
-            }
-
-            await Todo.findByIdAndUpdate(id, { title, description, date, priority, done });
-            res.status(200).json({ message: 'TODO actualizado exitosamente' });
-        } else if (req.method === 'DELETE') {
-            const { id } = req.query;
-
-            if (!id) {
-                return res.status(400).json({ message: 'El ID es requerido para eliminar.' });
-            }
-
-            await Todo.findByIdAndDelete(id);
-            res.status(200).json({ message: 'TODO eliminado exitosamente' });
-        } else {
-            res.status(405).json({ message: 'Método no permitido' });
+        // Validación de campos
+        if (!title || !description) {
+            return res.status(400).json({ message: 'El título y la descripción son obligatorios' });
         }
+
+        const newTodo = new Todo({ title, description, date, priority, done });
+        await newTodo.save();
+        res.status(201).json(newTodo);  // Devolver el TODO creado
     } catch (err) {
-        console.error(`Error al procesar la solicitud (${req.method}):`, err);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        console.error('Error al crear TODO:', err);
+        res.status(500).json({ message: 'Error al crear TODO' });
     }
-};
+});
+
+// Actualizar un TODO
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, date, priority, done } = req.body;
+
+        // Validación de campos (solo se actualizan los campos proporcionados)
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (description) updateData.description = description;
+        if (date) updateData.date = date;
+        if (priority) updateData.priority = priority;
+        if (typeof done === 'boolean') updateData.done = done;
+
+        const todo = await Todo.findByIdAndUpdate(id, updateData, { new: true });
+        if (!todo) {
+            return res.status(404).json({ message: 'TODO no encontrado' });
+        }
+
+        res.status(200).json({ message: 'TODO actualizado exitosamente', todo });
+    } catch (err) {
+        console.error('Error al actualizar TODO:', err);
+        res.status(500).json({ message: 'Error al actualizar TODO' });
+    }
+});
+
+// Eliminar un TODO
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const todo = await Todo.findByIdAndDelete(id);
+        if (!todo) {
+            return res.status(404).json({ message: 'TODO no encontrado' });
+        }
+
+        res.status(200).json({ message: 'TODO eliminado exitosamente', todo });
+    } catch (err) {
+        console.error('Error al eliminar TODO:', err);
+        res.status(500).json({ message: 'Error al eliminar TODO' });
+    }
+});
+
+module.exports = router;

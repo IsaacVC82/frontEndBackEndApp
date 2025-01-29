@@ -1,15 +1,16 @@
-const mysql = require("mysql2/promise");
+const mongoose = require('mongoose');
 
-async function connectDB() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  });
+// Función para conectar con la base de datos
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+    });
+    console.log('Conexión a MongoDB exitosa');
+  } catch (err) {
+    console.error('Error al conectar con MongoDB:', err);
+    process.exit(1); // Finalizar la aplicación si la conexión falla
+  }
+};
 
-  return connection;
-}
-
-module.exports = { connectDB };
+module.exports = connectDB;
 
