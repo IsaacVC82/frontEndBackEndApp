@@ -14,10 +14,11 @@ app.use(express.json());
 // Rutas principales
 app.use('/api/todo', todoHandler);
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-    res.send('Servidor Express está funcionando correctamente!');
+app.get("/todo", async (req, res) => {
+    const todos = await Todo.find();
+    res.json(todos);
 });
+
 
 // Conexión a la base de datos y servidor
 connectDB()

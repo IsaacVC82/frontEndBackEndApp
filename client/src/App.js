@@ -1,20 +1,20 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import ShowTodoList from './components/showTodoList'; 
-import  CreateTodo  from './components/createTodo'; 
-import UpdateTodo from './components/updateTodo'; 
-import './App.scss'; 
+import ShowTodoList from "./components/showTodoList";
+import CreateTodo from "./components/createTodo";
+import UpdateTodo from "./components/updateTodo";
+import "./App.scss";
 
 function App() {
   const [todos, setTodos] = useState([]);
-  
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}todo`)
       .then((res) => {
-        console.log("Tareas recibidas en App.js:", res.data); // Verifica que llegan correctamente
-        setTodos(res.data);
+        console.log("Tareas recibidas en App.js:", res.data); 
+        setTodos(Array.isArray(res.data) ? res.data : []); 
       })
       .catch((err) => {
         console.error("Error al cargar tareas:", err.message);
@@ -22,25 +22,46 @@ function App() {
   }, []);
   
 
-  // Maneja la adición de una nueva tarea
   const handleAddTodo = (newTodo) => {
     axios
       .post(`${process.env.REACT_APP_API_URL}todo`, newTodo)
       .then((res) => {
-        console.log('Respuesta del servidor:', res.data);
-        setTodos((prevTodos) => [...prevTodos, res.data.todo]); // Agrega la tarea nueva
+        console.log("Nueva tarea agregada:", res.data);
+        fetchTodos(); // 🔹 Vuelve a cargar la lista desde el servidor
       })
       .catch((err) => {
         console.error("Error al crear la tarea:", err.message);
       });
   };
-
+  
+  const fetchTodos = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}todo`)
+      .then((res) => {
+        console.log("Lista de tareas actualizada:", res.data);
+        setTodos(res.data);
+      })
+      .catch((err) => {
+        console.error("Error al cargar tareas:", err.message);
+      });
+  };
+  
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+  
   return (
     <Router>
+      <nav>
+        <ul>
+          <li><Link to="/">Crear Tarea</Link></li>
+          <li><Link to="/show">Ver Lista de Tareas</Link></li>
+        </ul>
+      </nav>
+
       <Routes>
         <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
         <Route path="/show" element={<ShowTodoList todos={todos} />} />
-        {console.log(todos)}
         <Route path="/update/:id" element={<UpdateTodo />} />
       </Routes>
     </Router>
@@ -48,3 +69,4 @@ function App() {
 }
 
 export default App;
+
