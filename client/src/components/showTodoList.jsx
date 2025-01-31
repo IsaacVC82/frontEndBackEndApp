@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Asegúrate de importar Link desde react-router-dom
+import { Link } from "react-router-dom";
 
 function ShowTodoList({ todos }) {
   return (
@@ -26,12 +26,7 @@ function ShowTodoList({ todos }) {
               <div>
                 <strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}
               </div>
-              <div>
-                {/* Enlace para editar la tarea */}
-                <Link to={`/update/${todo._id}`} className="edit-link">
-                  Editar
-                </Link>
-              </div>
+              <div><Link to={`/update/${todo._id}`}>Editar</Link></div>
             </li>
           ))}
         </ul>
@@ -41,4 +36,5 @@ function ShowTodoList({ todos }) {
 }
 
 export default ShowTodoList;
+
 

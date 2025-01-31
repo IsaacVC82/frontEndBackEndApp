@@ -20,20 +20,19 @@ function App() {
         console.error("Error al cargar tareas:", err.message);
       });
   }, []);
-  
 
   const handleAddTodo = (newTodo) => {
     axios
       .post(`${process.env.REACT_APP_API_URL}todo`, newTodo)
       .then((res) => {
         console.log("Nueva tarea agregada:", res.data);
-        fetchTodos(); // Vuelve a cargar la lista desde el servidor
+        fetchTodos(); 
       })
       .catch((err) => {
         console.error("Error al crear la tarea:", err.message);
       });
   };
-  
+
   const fetchTodos = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}todo`)
@@ -45,27 +44,25 @@ function App() {
         console.error("Error al cargar tareas:", err.message);
       });
   };
-  
-  useEffect(() => {
+
+  const handleEdited = () => {
     fetchTodos();
-  }, []);
-  
+  };
+
   return (
     <Router>
-      <div className="app-container">
-        <nav>
-          <ul>
-            <li><Link to="/">Crear Tarea</Link></li>
-            <li><Link to="/show">Ver Lista de Tareas</Link></li>
-          </ul>
-        </nav>
+      <nav>
+        <ul>
+          <li><Link to="/">Crear Tarea</Link></li>
+          <li><Link to="/show">Ver Lista de Tareas</Link></li>
+        </ul>
+      </nav>
 
-        <Routes>
-          <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
-          <Route path="/show" element={<ShowTodoList todos={todos} />} />
-          <Route path="/update/:id" element={<UpdateTodo />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
+        <Route path="/show" element={<ShowTodoList todos={todos} />} />
+        <Route path="/update/:id" element={<UpdateTodo handleEdited={handleEdited} />} />
+      </Routes>
     </Router>
   );
 }
