@@ -27,7 +27,7 @@ function App() {
       .post(`${process.env.REACT_APP_API_URL}todo`, newTodo)
       .then((res) => {
         console.log("Nueva tarea agregada:", res.data);
-        fetchTodos(); // 🔹 Vuelve a cargar la lista desde el servidor
+        fetchTodos(); // Vuelve a cargar la lista desde el servidor
       })
       .catch((err) => {
         console.error("Error al crear la tarea:", err.message);
@@ -52,21 +52,22 @@ function App() {
   
   return (
     <Router>
-      <nav>
-        <ul>
-          <li><Link to="/">Crear Tarea</Link></li>
-          <li><Link to="/show">Ver Lista de Tareas</Link></li>
-        </ul>
-      </nav>
+      <div className="app-container">
+        <nav>
+          <ul>
+            <li><Link to="/">Crear Tarea</Link></li>
+            <li><Link to="/show">Ver Lista de Tareas</Link></li>
+          </ul>
+        </nav>
 
-      <Routes>
-        <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
-        <Route path="/show" element={<ShowTodoList todos={todos} />} />
-        <Route path="/update/:id" element={<UpdateTodo />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
+          <Route path="/show" element={<ShowTodoList todos={todos} />} />
+          <Route path="/update/:id" element={<UpdateTodo />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
 
 export default App;
-

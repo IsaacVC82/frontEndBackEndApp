@@ -1,30 +1,44 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Asegúrate de importar Link desde react-router-dom
 
-const ShowTodoList = ({ todos }) => {
-  if (!Array.isArray(todos) || todos.length === 0) {
-    return <h2>No hay tareas disponibles</h2>;
-  }
-
+function ShowTodoList({ todos }) {
   return (
-    <div>
+    <div className="app-container">
       <h2>Lista de Tareas</h2>
-      <ul>
-        {todos.map((todo, index) => {
-          if (!todo || typeof todo !== "object") {
-            return <li key={index}>Tarea inválida</li>;
-          }
-
-          return (
-            <li key={todo._id || index}>
-              <strong>{todo.title ?? "Sin título"}</strong>:{" "}
-              {todo.description ?? "Sin descripción"}
+      {todos.length === 0 ? (
+        <p>No hay tareas disponibles.</p>
+      ) : (
+        <ul>
+          {todos.map((todo) => (
+            <li key={todo._id} className="todo-item">
+              <div>
+                <strong>Título:</strong> {todo.title}
+              </div>
+              <div>
+                <strong>Descripción:</strong> {todo.description}
+              </div>
+              <div>
+                <strong>Fecha:</strong> {todo.date}
+              </div>
+              <div>
+                <strong>Prioridad:</strong> {todo.priority}
+              </div>
+              <div>
+                <strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}
+              </div>
+              <div>
+                {/* Enlace para editar la tarea */}
+                <Link to={`/update/${todo._id}`} className="edit-link">
+                  Editar
+                </Link>
+              </div>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      )}
     </div>
   );
-};
+}
 
 export default ShowTodoList;
 
