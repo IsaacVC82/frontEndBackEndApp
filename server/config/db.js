@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require("dotenv").config(); 
 
 // Función para conectar con la base de datos
 const connectDB = async () => {
