@@ -21,7 +21,8 @@ app.use(express.json());
 // Usar las rutas
 app.use('/api', todoRoutes);  
 
-// Conectar a MongoDB
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch((err) => console.log('Error al conectar con MongoDB:', err));
