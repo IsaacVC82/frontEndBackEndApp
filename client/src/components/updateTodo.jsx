@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
-export function UpdateTodo({ handleEdited }) {
+function UpdateTodo() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const [data, setData] = useState({
+  const [todo, setTodo] = useState({
     title: "",
     description: "",
     date: "",
@@ -14,87 +12,114 @@ export function UpdateTodo({ handleEdited }) {
     done: false,
   });
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Cargar los datos de la tarea cuando el componente se monta
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}todo/${id}`)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.error("Error al cargar los datos de la tarea:", err.message);
-      });
+    const fetchTodo = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/todos/${id}`);
+        if (!response.ok) {
+          throw new Error("No se pudo obtener la tarea");
+        }
+        const data = await response.json();
+
+        setTodo({
+          title: data.title,
+          description: data.description,
+          date: data.date ? data.date.split("T")[0] : "", // Formato YYYY-MM-DD
+          priority: data.priority,
+          done: data.done,
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al cargar la tarea:", error);
+        setError("No se pudo cargar la tarea.");
+        setLoading(false);
+      }
+    };
+
+    fetchTodo();
   }, [id]);
 
-  function handleChange(e) {
+  // Manejo de cambios en los inputs
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setData((prevData) => ({
-      ...prevData,
+    setTodo({
+      ...todo,
       [name]: type === "checkbox" ? checked : value,
-    }));
-  }
+    });
+  };
 
-  function handleSubmit(e) {
+  // Enviar los datos actualizados
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .put(`${process.env.REACT_APP_API_URL}todo/${id}`, data)
-      .then((res) => {
-        console.log("Tarea actualizada:", res.data);
-        handleEdited(); // Actualiza la lista de tareas
-        navigate("/show"); // Redirige a la vista de las tareas
-      })
-      .catch((err) => {
-        console.error("Error al actualizar la tarea:", err.message);
+    setError("");
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todo),
       });
-  }
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar la tarea");
+      }
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error al actualizar la tarea:", error);
+      setError("No se pudo actualizar la tarea.");
+    }
+  };
+
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div className="app-container">
-    <form onSubmit={handleSubmit}>
-      <label>Título</label>
-      <input
-        type="text"
-        name="title"
-        value={data.title}
-        onChange={handleChange}
-        required
-      />
-      <label>Descripción</label>
-      <input
-        type="text"
-        name="description"
-        value={data.description}
-        onChange={handleChange}
-        required
-      />
-      <label>Fecha</label>
-      <input
-        type="date"
-        name="date"
-        value={data.date}
-        onChange={handleChange}
-        required
-      />
-      <label>Prioridad</label>
-      <select
-        name="priority"
-        value={data.priority}
-        onChange={handleChange}
-      >
-        <option value="Baja">Baja</option>
-        <option value="Media">Media</option>
-        <option value="Alta">Alta</option>
-      </select>
-      <label>Hecho</label>
-      <input
-        type="checkbox"
-        name="done"
-        checked={data.done}
-        onChange={handleChange}
-      />
-      <button type="submit">Actualizar Tarea</button>
-    </form>
+      <h2>Editar Tarea</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Título:</label>
+          <input type="text" name="title" value={todo.title} onChange={handleChange} required />
+        </div>
+
+        <div>
+          <label>Descripción:</label>
+          <textarea name="description" value={todo.description} onChange={handleChange} required />
+        </div>
+
+        <div>
+          <label>Fecha:</label>
+          <input type="date" name="date" value={todo.date} onChange={handleChange} required />
+        </div>
+
+        <div>
+          <label>Prioridad:</label>
+          <select name="priority" value={todo.priority} onChange={handleChange} required>
+            <option value="Baja">Baja</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Estado:</label>
+          <input type="checkbox" name="done" checked={todo.done} onChange={handleChange} />
+          <span>{todo.done ? "Hecho" : "Pendiente"}</span>
+        </div>
+
+        <button type="submit">Actualizar Tarea</button>
+      </form>
     </div>
   );
 }
 
 export default UpdateTodo;
+

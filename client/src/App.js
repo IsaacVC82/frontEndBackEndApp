@@ -61,8 +61,8 @@ function App() {
       <Routes>
         <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
         <Route path="/show" element={<ShowTodoList todos={todos} />} />
-        <Route path="/update/:id" element={<UpdateTodo handleEdited={handleEdited} />} />
-      </Routes>
+        <Route path="/update/:id" element={<UpdateTodo />} />
+        </Routes>
     </Router>
   );
 }
