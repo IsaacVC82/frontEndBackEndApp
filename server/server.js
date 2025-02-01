@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const connectDB = require('./config/db');  
 const helmet = require('helmet');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -21,11 +21,8 @@ app.use(express.json());
 // Usar las rutas
 app.use('/api', todoRoutes);  
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch((err) => console.log('Error al conectar con MongoDB:', err));
+// Conectar a la base de datos
+connectDB();  
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
