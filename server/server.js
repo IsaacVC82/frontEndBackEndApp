@@ -1,38 +1,33 @@
 const express = require('express');
+const connectDB = require('./config/db');  
 const helmet = require('helmet');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Cargar las variables de entorno
 dotenv.config();
 
+// Crear la aplicación de Express
 const app = express();
 
 // Importar las rutas
 const todoRoutes = require('./routes/todo');
 
-// Configuración de CSP (Content Security Policy)
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],  // Restringir todo a la misma fuente
-      scriptSrc: ["'self'"],  // Permitir scripts de la misma fuente
-      styleSrc: ["'self'", "'unsafe-inline'"],  // Permitir estilos
-      imgSrc: ["'self'", "https://frontendbackendapp.onrender.com"],  // Permitir imágenes 
-      connectSrc: ["'self'"],  // Permitir conexiones a la misma fuente
-      fontSrc: ["'self'"],  // Permitir fuentes desde la misma fuente
-      objectSrc: ["'none'"],  // Deshabilitar objetos (como Flash)
-      frameSrc: ["'none'"],  // Deshabilitar iframes
-    },
-  })
-);
-
-// Otros middlewares
+// Middlewares
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Usar las rutas
-app.use('/api', todoRoutes);
+app.use('/api', todoRoutes);  
+
+// Conectar a la base de datos
+connectDB();  
+
+app.get('/favicon.ico', (req, res) => res.status(204)); // Evitar que se muestre error por favicon
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
