@@ -16,6 +16,21 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Obtener un TODO específico por ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const todo = await Todo.findById(id);  // Buscar la tarea por ID
+        if (!todo) {
+            return res.status(404).json({ message: 'TODO no encontrado' });
+        }
+        res.status(200).json(todo);  // Devolver la tarea encontrada
+    } catch (err) {
+        console.error('Error al obtener TODO:', err);
+        res.status(500).json({ message: 'Error al obtener TODO' });
+    }
+});
+
 // Crear un nuevo TODO
 router.post('/', async (req, res) => {
     try {
@@ -41,7 +56,6 @@ router.put('/:id', async (req, res) => {
         const { id } = req.params;
         const { title, description, date, priority, done } = req.body;
 
-        // Validación de campos (solo se actualizan los campos proporcionados)
         const updateData = {};
         if (title) updateData.title = title;
         if (description) updateData.description = description;

@@ -1,36 +1,33 @@
 const express = require('express');
-const connectDB = require('./config/db');  
-const helmet = require('helmet');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
+require('dotenv').config();
 
-// Cargar las variables de entorno
-dotenv.config();
-
-// Crear la aplicación de Express
 const app = express();
 
-// Importar las rutas
-const todoRoutes = require('./routes/todo');
+// Configuración del puerto
+const port = process.env.PORT || 8000;
 
-// Middlewares
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
+// Middleware
+app.use(cors()); 
+app.use(express.json()); // Para poder parsear los cuerpos de las solicitudes en formato JSON
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Conectar a MongoDB
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch((err) => console.error('Error al conectar a MongoDB:', err));
 
-// Usar las rutas
-app.use('/api', todoRoutes);  
+// Rutas de la API
+const todoRoutes = require('./api/todo');
+app.use('/api/todos', todoRoutes);  // Configura las rutas de TODOs
 
-// Conectar a la base de datos
-connectDB();  
-
-app.get('/favicon.ico', (req, res) => res.status(204)); // Evitar que se muestre error por favicon
+// Ruta principal de prueba
+app.get('/', (req, res) => {
+  res.send('Servidor corriendo');
+});
 
 // Iniciar el servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
