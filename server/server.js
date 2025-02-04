@@ -1,42 +1,27 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
-
 const app = express();
 
-// Configuración del puerto
-const port = process.env.PORT || 8000;
+// Middleware para parsear JSON en las solicitudes
+app.use(express.json());
 
-// Middleware
-app.use(cors()); 
-app.use(express.json()); // Para poder parsear los cuerpos de las solicitudes en formato JSON
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Conectado a MongoDB'))
+    .catch(err => console.error('Error de conexión a MongoDB:', err));
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch((err) => console.error('Error al conectar a MongoDB:', err));
-
-// Rutas de la API
-const todoRoutes = require('./api/todo');
-app.use('/api/todos', todoRoutes);  // Configura las rutas de TODOs
-
-// Ruta principal de prueba
-app.get('/', (req, res) => {
-  res.send('Servidor corriendo');
-});
-
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
-const path = require('path');
+app.use('/api/todos', require('./routes/todo'));
 
 app.use(express.static(path.join(__dirname, '../client/build')));
 
+// Enviar el archivo index.html de React para todas las rutas no definidas en la API
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
-
+// Puerto en el que corre el servidor
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
 
