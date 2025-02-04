@@ -1,25 +1,32 @@
-const express = require('express');
-const path = require('path');
-const mongoose = require('mongoose');
-const app = express();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const path = require("path");
+require("dotenv").config();
 
-// Middleware para parsear JSON en las solicitudes
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('Conectado a MongoDB'))
-    .catch(err => console.error('Error de conexión a MongoDB:', err));
+// Conexión a MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("Conectado a MongoDB"))
+.catch(err => console.error("Error de conexión a MongoDB:", err));
 
-app.use('/api/todos', require('./routes/todo'));
+// Servir el frontend
+app.use(express.static(path.join(__dirname, "client/build")));
 
-app.use(express.static(path.join(__dirname, 'client/build'))); 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html')); 
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
 });
 
-
-// Puerto en el que corre el servidor
-const PORT = process.env.PORT || 10000;
+// Iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
