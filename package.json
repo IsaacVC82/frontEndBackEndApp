@@ -1,4 +1,9 @@
 {
+"scripts": {
+  "install": "npm install && cd client && npm install", 
+  "build": "cd client && npm run build"  
+}
+
   "dependencies": {
     "helmet": "^8.0.0"
   }
