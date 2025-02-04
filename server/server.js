@@ -32,10 +32,10 @@ app.listen(port, () => {
 });
 const path = require("path");
 
-// Servir archivos estáticos de React
-app.use(express.static(path.join(__dirname, "frontend", "build")));
+// Servir archivos estáticos de React desde la carpeta build
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
