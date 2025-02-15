@@ -1,7 +1,7 @@
 // server/routes/todo.js
 const express = require("express");
 const router = express.Router();
-const Todo = require("../models/Todo");
+const Todo = require("../models/todo");
 
 // Obtener todas las tareas
 router.get("/", async (req, res) => {
