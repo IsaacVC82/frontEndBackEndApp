@@ -23,13 +23,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 const todoRoutes = require("./routes/todoRoutes");
 app.use("/api/todos", todoRoutes);
 
-// Servir el frontend 
+// Sirve los archivos estáticos del frontend
 app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
-
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor backend corriendo en el puerto ${PORT}`);
