@@ -5,13 +5,13 @@ FROM node:18
 WORKDIR /app
 
 # Copiar el package.json y package-lock.json
-COPY server/package*.json ./
+COPY package*.json ./
 
 # Instalar dependencias
 RUN npm install
 
 # Copiar el resto del código del servidor
-COPY server ./
+COPY . .
 
 # Exponer el puerto en el que corre la aplicación
 EXPOSE 8000
