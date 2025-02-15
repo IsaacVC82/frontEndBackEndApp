@@ -13,9 +13,6 @@ RUN npm install
 # Copiar el resto del código del servidor
 COPY . .
 
-# Construir el frontend 
-RUN cd ../client && npm install && npm run build
-
 # Exponer el puerto en el que corre la aplicación
 EXPOSE 8000
 
