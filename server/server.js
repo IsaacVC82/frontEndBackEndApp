@@ -14,22 +14,24 @@ app.use(express.json());
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 })
 .then(() => console.log("Conectado a MongoDB"))
 .catch(err => console.error("Error de conexión a MongoDB:", err));
 
-// Importar y usar las rutas
-const todoRoutes = require("./routes/todoRoutes");
-app.use("/api/todos", todoRoutes);
+// Rutas de la API
+const todoRoutes = require("./routes/todo"); 
+app.use("/api/todo", todoRoutes); 
 
-// Sirve los archivos estáticos del frontend
+// Sirve los archivos estáticos del frontend 
 app.use(express.static(path.join(__dirname, "../client/build")));
 
+// Ruta para manejar todas las solicitudes y servir el index.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
-// Iniciar servidor
+
+// Iniciar el servidor
 app.listen(PORT, () => {
-    console.log(`Servidor backend corriendo en el puerto ${PORT}`);
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

@@ -13,7 +13,7 @@ function App() {
   // Función para cargar las tareas desde el backend
   const fetchTodos = () => {
     axios
-      .get(`${API_URL}/api/todos`)
+      .get(`${API_URL}/api/todo`)
       .then((res) => {
         setTodos(res.data);
       })
@@ -30,7 +30,7 @@ function App() {
   // Función para agregar una nueva tarea
   const handleAddTodo = (newTodo) => {
     axios
-      .post(`${API_URL}/api/todos`, newTodo)
+      .post(`${API_URL}/api/todo`, newTodo)
       .then((res) => {
         fetchTodos(); // Recargar la lista de tareas después de agregar una nueva
       })
