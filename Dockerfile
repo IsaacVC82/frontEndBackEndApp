@@ -1,13 +1,13 @@
 # Usar una imagen base de Node.js
 FROM node:18
 
-# Establecer el directorio de trabajo
+# Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar el package.json y package-lock.json del backend
+# Copiar los archivos de dependencias del backend
 COPY server/package*.json ./
 
-# Instalar dependencias del backend
+# Instalar las dependencias del backend
 RUN npm install
 
 # Copiar el resto del código del backend
