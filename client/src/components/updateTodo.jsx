@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const UpdateTodo = () => {
+const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();  // Obtener el ID desde la URL
   const navigate = useNavigate();  
   const [todo, setTodo] = useState({
@@ -14,7 +14,6 @@ const UpdateTodo = () => {
   });
 
   useEffect(() => {
-    // Obtener la tarea desde el backend con el ID de la URL
     axios.get(`${process.env.REACT_APP_API_URL}/api/todos/${id}`)
       .then(res => {
         setTodo(res.data);  // Cargar los datos de la tarea en el estado
@@ -24,7 +23,6 @@ const UpdateTodo = () => {
       });
   }, [id]);  // Cuando el ID cambie, se vuelve a cargar la tarea
 
-  // Función para manejar el cambio en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTodo(prevState => ({
@@ -33,15 +31,14 @@ const UpdateTodo = () => {
     }));
   };
 
-  // Función para actualizar la tarea
   const handleSubmit = (e) => {
     e.preventDefault();
     
     axios.put(`${process.env.REACT_APP_API_URL}/api/todos/${id}`, todo)
       .then(res => {
         console.log("Tarea actualizada:", res.data);
-        // Redirigir a la página de ver tareas después de actualizar
-        navigate('/show');
+        fetchTodos();  // Actualizar la lista de tareas
+        navigate('/show');  // Redirigir a la página de ver tareas
       })
       .catch(err => {
         console.error("Error al actualizar la tarea:", err.message);
@@ -49,7 +46,7 @@ const UpdateTodo = () => {
   };
 
   return (
-    <div>
+    <div className="app-container">
       <h2>Actualizar Tarea</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -85,9 +82,9 @@ const UpdateTodo = () => {
             value={todo.priority}
             onChange={handleChange}
           >
-            <option value="Low">Baja</option>
-            <option value="Medium">Media</option>
-            <option value="High">Alta</option>
+            <option value="Baja">Baja</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
           </select>
         </div>
         <div>

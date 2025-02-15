@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function ShowTodoList({ todos }) {
+function ShowTodoList({ todos, fetchTodos }) {
+  const navigate = useNavigate();
+
   return (
     <div className="app-container">
       <h2>Lista de Tareas</h2>
@@ -18,7 +20,7 @@ function ShowTodoList({ todos }) {
                 <strong>Descripción:</strong> {todo.description}
               </div>
               <div>
-                <strong>Fecha:</strong> {todo.date}
+                <strong>Fecha:</strong> {new Date(todo.date).toLocaleDateString()}
               </div>
               <div>
                 <strong>Prioridad:</strong> {todo.priority}
@@ -26,15 +28,16 @@ function ShowTodoList({ todos }) {
               <div>
                 <strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}
               </div>
-              <div><Link to={`/update/${todo._id}`}>Editar</Link></div>
+              <div>
+                <Link to={`/update/${todo._id}`}>Editar</Link>
+              </div>
             </li>
           ))}
         </ul>
       )}
+      <button onClick={() => navigate("/")}>Crear Nueva Tarea</button>
     </div>
   );
 }
 
 export default ShowTodoList;
-
-
