@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function ShowTodoList({ todos, fetchTodos }) {
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
@@ -10,15 +10,10 @@ function ShowTodoList({ todos, fetchTodos }) {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/api/todo/${id}`);
-      fetchTodos(); // Actualizar la lista de tareas después de eliminar
+      fetchTodos(); // Actualizar la lista de tareas
     } catch (err) {
       console.error("Error al eliminar la tarea:", err.message);
     }
-  };
-
-  // Función para redirigir a la página de edición
-  const handleEdit = (id) => {
-    navigate(`/update/${id}`);
   };
 
   return (
@@ -30,25 +25,13 @@ function ShowTodoList({ todos, fetchTodos }) {
         <ul>
           {todos.map((todo) => (
             <li key={todo._id} className="todo-item">
-              <div>
-                <strong>Título:</strong> {todo.title}
-              </div>
-              <div>
-                <strong>Descripción:</strong> {todo.description}
-              </div>
-              <div>
-                <strong>Fecha:</strong> {todo.date}
-              </div>
-              <div>
-                <strong>Prioridad:</strong> {todo.priority}
-              </div>
-              <div>
-                <strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}
-              </div>
-              <div>
-                <button onClick={() => handleEdit(todo._id)}>Editar</button>
-                <button onClick={() => handleDelete(todo._id)}>Eliminar</button>
-              </div>
+              <div><strong>Título:</strong> {todo.title}</div>
+              <div><strong>Descripción:</strong> {todo.description}</div>
+              <div><strong>Fecha:</strong> {todo.date}</div>
+              <div><strong>Prioridad:</strong> {todo.priority}</div>
+              <div><strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}</div>
+              <button onClick={() => navigate(`/update/${todo._id}`)}>Editar</button>
+              <button onClick={() => handleDelete(todo._id)}>Eliminar</button>
             </li>
           ))}
         </ul>
@@ -58,3 +41,4 @@ function ShowTodoList({ todos, fetchTodos }) {
 }
 
 export default ShowTodoList;
+
