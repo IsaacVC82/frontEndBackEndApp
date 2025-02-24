@@ -53,27 +53,16 @@ router.post('/', async (req, res) => {
 // Actualizar un TODO
 router.put('/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        const { title, description, date, priority, done } = req.body;
-
-        const updateData = {};
-        if (title) updateData.title = title;
-        if (description) updateData.description = description;
-        if (date) updateData.date = date;
-        if (priority) updateData.priority = priority;
-        if (typeof done === 'boolean') updateData.done = done;
-
-        const todo = await Todo.findByIdAndUpdate(id, updateData, { new: true });
-        if (!todo) {
-            return res.status(404).json({ message: 'TODO no encontrado' });
-        }
-
-        res.status(200).json({ message: 'TODO actualizado exitosamente', todo });
+      const updatedTodo = await Todo.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true } // Devuelve el documento actualizado
+      );
+      res.json(updatedTodo);
     } catch (err) {
-        console.error('Error al actualizar TODO:', err);
-        res.status(500).json({ message: 'Error al actualizar TODO' });
+      res.status(400).json({ message: err.message });
     }
-});
+  });
 
 // Eliminar un TODO
 router.delete('/:id', async (req, res) => {

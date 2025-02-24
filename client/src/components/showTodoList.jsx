@@ -1,8 +1,25 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ShowTodoList({ todos, fetchTodos }) {
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
   const navigate = useNavigate();
+
+  // Función para eliminar una tarea
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/api/todo/${id}`);
+      fetchTodos(); // Actualizar la lista de tareas después de eliminar
+    } catch (err) {
+      console.error("Error al eliminar la tarea:", err.message);
+    }
+  };
+
+  // Función para redirigir a la página de edición
+  const handleEdit = (id) => {
+    navigate(`/update/${id}`);
+  };
 
   return (
     <div className="app-container">
@@ -20,7 +37,7 @@ function ShowTodoList({ todos, fetchTodos }) {
                 <strong>Descripción:</strong> {todo.description}
               </div>
               <div>
-                <strong>Fecha:</strong> {new Date(todo.date).toLocaleDateString()}
+                <strong>Fecha:</strong> {todo.date}
               </div>
               <div>
                 <strong>Prioridad:</strong> {todo.priority}
@@ -29,13 +46,13 @@ function ShowTodoList({ todos, fetchTodos }) {
                 <strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}
               </div>
               <div>
-                <Link to={`/update/${todo._id}`}>Editar</Link>
+                <button onClick={() => handleEdit(todo._id)}>Editar</button>
+                <button onClick={() => handleDelete(todo._id)}>Eliminar</button>
               </div>
             </li>
           ))}
         </ul>
       )}
-      <button onClick={() => navigate("/")}>Crear Nueva Tarea</button>
     </div>
   );
 }
