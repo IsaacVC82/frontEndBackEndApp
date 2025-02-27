@@ -9,9 +9,10 @@ const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors({
-    origin: "https://isaacvc82.github.io/frontendbackendapp", 
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
-  }));app.use(express.json());
+}));
+app.use(express.json());
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -22,15 +23,16 @@ mongoose.connect(process.env.MONGODB_URI, {
 .catch(err => console.error("Error de conexión a MongoDB:", err));
 
 // Rutas de la API
-const todoRoutes = require("./routes/todo"); 
-app.use("/api/todo", todoRoutes); 
+const todoRoutes = require("./routes/todo");
+app.use("/api/todo", todoRoutes);
 
-// Sirve los archivos estáticos del frontend 
-app.use(express.static(path.join(__dirname, "../client/build")));
+// Sirve los archivos estáticos del frontend
+const clientBuildPath = path.join(__dirname, "client/build");
+app.use(express.static(clientBuildPath));
 
-// Ruta para manejar todas las solicitudes y servir el index.html
+// Ruta para manejar las demás solicitudes y servir el frontend
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+    res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 
 // Iniciar el servidor

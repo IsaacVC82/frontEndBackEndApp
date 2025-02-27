@@ -1,26 +1,23 @@
-# Usar una imagen base de Node.js
-FROM node:18
+FROM node:18-alpine
 
-# Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar los archivos de dependencias del backend
+# Backend
 COPY server/package*.json ./
-
-# Instalar las dependencias del backend
 RUN npm install
-
-# Copiar el resto del código del backend
 COPY server ./
 
-# Copiar la carpeta client al contenedor
+# Frontend
 COPY client ./client
+WORKDIR /app/client
+RUN npm install --legacy-peer-deps && npm run build
 
-# Construir el frontend
-RUN cd client && npm install && npm run build
+# Mover el build del frontend
+WORKDIR /app
+RUN mkdir -p client/build && cp -r client/build/* client/build/
 
-# Exponer el puerto en el que corre la aplicación
+# Exponer el puerto
 EXPOSE 8000
 
-# Comando para iniciar la aplicación
+# Iniciar la app
 CMD ["node", "server.js"]
