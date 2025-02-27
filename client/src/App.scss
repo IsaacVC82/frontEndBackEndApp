@@ -1,6 +1,6 @@
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f0f2f5;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
   margin: 0;
   padding: 0;
   color: #333;
@@ -8,147 +8,149 @@ body {
 
 .app-container {
   max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 40px auto;
+  padding: 30px;
   background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 nav {
   background-color: #1700ea;
-  padding: 15px;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 18px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-
-    li {
-      margin-right: 20px;
-
-      a {
-        color: #fff;
-        text-decoration: none;
-        font-weight: bold;
-        padding: 10px 15px;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
-      }
-    }
-  }
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 form {
   display: flex;
   flex-direction: column;
-  background-color: #f9f9f9;
-  padding: 20px;
+  gap: 15px;
+  background-color: #f3f4f6;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+  font-weight: 600;
+  color: #444;
+}
+
+form input, textarea, select {
+  padding: 12px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
 
-  label {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #555;
-  }
+form input:focus, textarea:focus, select:focus {
+  border-color: #1700ea;
+  outline: none;
+}
 
-  input, textarea, select {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
+form button {
+  padding: 14px;
+  background-color: #1700ea;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-    &:focus {
-      border-color: #1700ea;
-      outline: none;
-    }
-  }
-
-  button {
-    padding: 12px;
-    background-color: #1700ea;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #1700ea;
-    }
-  }
+form button:hover {
+  background-color: #1500c8;
 }
 
 .todo-item {
   background-color: #fff;
   border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  div {
-    margin-bottom: 8px;
-    font-size: 16px;
-
-    strong {
-      color: #1700ea;
-    }
-  }
-
-  a {
-    color: #1700ea;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: #1700ea;
-    }
-  }
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #1700ea;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
+.todo-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-  &:hover {
-    background-color: #1700ea;
-  }
+.todo-item div {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.todo-item strong {
+  color: #1700ea;
+}
+
+.todo-item a {
+  color: #1700ea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.todo-item a:hover {
+  color: #1500c8;
 }
 
 h2 {
   color: #1700ea;
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
 }
 
 p {
   text-align: center;
-  color: #777;
+  color: #555;
+  font-size: 16px;
+}
+
+button {
+  padding: 12px 25px;
+  background-color: #1700ea;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1500c8;
 }
