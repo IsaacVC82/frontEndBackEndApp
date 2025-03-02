@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function ShowTodoList({ todos, fetchTodos }) {
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+  const API_URL = "https://frontendbackendapp.onrender.com";
   const navigate = useNavigate();
 
   // Función para eliminar una tarea
@@ -41,4 +41,3 @@ function ShowTodoList({ todos, fetchTodos }) {
 }
 
 export default ShowTodoList;
-

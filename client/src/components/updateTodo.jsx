@@ -5,7 +5,7 @@ import axios from 'axios';
 const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+  const API_URL = "https://frontendbackendapp.onrender.com";
 
   const [todo, setTodo] = useState({
     title: '',
