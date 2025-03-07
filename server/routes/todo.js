@@ -1,55 +1,69 @@
-// server/routes/todo.js
 const express = require("express");
 const router = express.Router();
 const Todo = require("../models/todo");
+const authMiddleware = require("../middleware/authMiddleware");
 
-// Obtener todas las tareas
-router.get("/", async (req, res) => {
+// Obtener las tareas del usuario autenticado
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ userId: req.user.id });
     res.json(todos);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Error al obtener las tareas" });
   }
 });
 
-// Crear una nueva tarea
-router.post("/", async (req, res) => {
+// Crear una nueva tarea asociada al usuario autenticado
+router.post("/", authMiddleware, async (req, res) => {
+  const { title, description, date, priority, done } = req.body;
+
   const todo = new Todo({
-    title: req.body.title,
-    description: req.body.description,
-    date: req.body.date,
-    priority: req.body.priority,
-    done: req.body.done,
+    title,
+    description,
+    date,
+    priority,
+    done,
+    userId: req.user.id,
   });
 
   try {
     const newTodo = await todo.save();
     res.status(201).json(newTodo);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "Error al crear la tarea" });
   }
 });
 
-// Actualizar una tarea
-router.put("/:id", async (req, res) => {
+// Actualizar una tarea del usuario autenticado
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(updatedTodo);
+    const todo = await Todo.findOne({ _id: req.params.id, userId: req.user.id });
+
+    if (!todo) {
+      return res.status(404).json({ message: "Tarea no encontrada" });
+    }
+
+    Object.assign(todo, req.body);
+    await todo.save();
+
+    res.json(todo);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: "Error al actualizar la tarea" });
   }
 });
 
-// Eliminar una tarea
-router.delete("/:id", async (req, res) => {
+// Eliminar una tarea del usuario autenticado
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    await Todo.findByIdAndDelete(req.params.id);
+    const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+
+    if (!todo) {
+      return res.status(404).json({ message: "Tarea no encontrada" });
+    }
+
     res.json({ message: "Tarea eliminada" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Error al eliminar la tarea" });
   }
 });
 

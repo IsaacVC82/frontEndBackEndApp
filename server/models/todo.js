@@ -1,28 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const todoSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, 'El título es obligatorio'],
-  },
-  description: {
-    type: String,
-    required: [true, 'La descripción es obligatoria'],
-  },
-  date: {
-    type: Date,
-    required: [true, 'La fecha es obligatoria'],
-  },
-  priority: {
-    type: String,
-    enum: ['Baja', 'Media', 'Alta'], // Opciones válidas
-    required: [true, 'La prioridad es obligatoria'],
-  },
-  done: {
-    type: Boolean,
-    default: false,
-    required: false,
-  },
+  title: { type: String, required: true },
+  description: String,
+  date: Date,
+  priority: { type: String, enum: ["baja", "media", "alta"], default: "baja" },
+  done: { type: Boolean, default: false },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Relación con usuario
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model('Todo', todoSchema);
+module.exports = mongoose.model("Todo", todoSchema);
+
