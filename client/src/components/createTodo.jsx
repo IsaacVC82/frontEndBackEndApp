@@ -8,11 +8,11 @@ function CreateTodo({ handleAddTodo }) {
     date: "",
     priority: "Baja",
     done: false,
+    userId: localStorage.getItem('userId') || "",
   });
 
   const navigate = useNavigate();
 
-  // Función para manejar cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setData((prevData) => ({
@@ -21,11 +21,14 @@ function CreateTodo({ handleAddTodo }) {
     }));
   };
 
-  // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!data.userId) {
+      console.error('El userId es obligatorio');
+      return;
+    }
     handleAddTodo(data);
-    setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+    setData({ title: "", description: "", date: "", priority: "Baja", done: false, userId: data.userId });
   };
 
   return (
@@ -33,29 +36,11 @@ function CreateTodo({ handleAddTodo }) {
       <h2>Crear Nueva Tarea</h2>
       <form onSubmit={handleSubmit}>
         <label>Título</label>
-        <input
-          type="text"
-          name="title"
-          value={data.title}
-          onChange={handleChange}
-          required
-        />
+        <input type="text" name="title" value={data.title} onChange={handleChange} required />
         <label>Descripción</label>
-        <input
-          type="text"
-          name="description"
-          value={data.description}
-          onChange={handleChange}
-          required
-        />
+        <input type="text" name="description" value={data.description} onChange={handleChange} required />
         <label>Fecha</label>
-        <input
-          type="date"
-          name="date"
-          value={data.date}
-          onChange={handleChange}
-          required
-        />
+        <input type="date" name="date" value={data.date} onChange={handleChange} required />
         <label>Prioridad</label>
         <select name="priority" value={data.priority} onChange={handleChange}>
           <option value="Baja">Baja</option>
@@ -63,12 +48,7 @@ function CreateTodo({ handleAddTodo }) {
           <option value="Alta">Alta</option>
         </select>
         <label>Hecho</label>
-        <input
-          type="checkbox"
-          name="done"
-          checked={data.done}
-          onChange={handleChange}
-        />
+        <input type="checkbox" name="done" checked={data.done} onChange={handleChange} />
         <button type="submit">Crear Tarea</button>
       </form>
       <button onClick={() => navigate("/show")}>Ver Lista de Tareas</button>
@@ -77,3 +57,4 @@ function CreateTodo({ handleAddTodo }) {
 }
 
 export default CreateTodo;
+

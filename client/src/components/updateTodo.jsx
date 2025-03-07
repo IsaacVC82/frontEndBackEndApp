@@ -5,7 +5,7 @@ import axios from 'axios';
 const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_URL = "https://frontendbackendapp.onrender.com";
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
   const [todo, setTodo] = useState({
     title: '',
@@ -16,38 +16,39 @@ const UpdateTodo = ({ fetchTodos }) => {
   });
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/todo/${id}`)
-      .then(res => {
+    const fetchTodo = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/todo/${id}`);
         const todoData = {
           ...res.data,
-          date: res.data.date.split('T')[0],
+          date: res.data.date ? res.data.date.split('T')[0] : '',
         };
         setTodo(todoData);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error("Error al cargar la tarea:", err.message);
-      });
+      }
+    };
+
+    fetchTodo();
   }, [id, API_URL]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setTodo(prevState => ({
+    setTodo((prevState) => ({
       ...prevState,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    axios.put(`${API_URL}/api/todo/${id}`, todo)
-      .then(() => {
-        fetchTodos();
-        navigate('/show');
-      })
-      .catch(err => {
-        console.error("Error al actualizar la tarea:", err.message);
-      });
+    try {
+      await axios.put(`${API_URL}/api/todo/${id}`, todo);
+      fetchTodos();
+      navigate('/show');
+    } catch (err) {
+      console.error("Error al actualizar la tarea:", err.message);
+    }
   };
 
   return (

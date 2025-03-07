@@ -3,14 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function ShowTodoList({ todos, fetchTodos }) {
-  const API_URL = "https://frontendbackendapp.onrender.com";
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
   const navigate = useNavigate();
 
-  // Función para eliminar una tarea
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/api/todo/${id}`);
-      fetchTodos(); // Actualizar la lista de tareas
+      fetchTodos();
     } catch (err) {
       console.error("Error al eliminar la tarea:", err.message);
     }
@@ -19,9 +18,7 @@ function ShowTodoList({ todos, fetchTodos }) {
   return (
     <div className="app-container">
       <h2>Lista de Tareas</h2>
-      {todos.length === 0 ? (
-        <p>No hay tareas disponibles.</p>
-      ) : (
+      {todos.length === 0 ? <p>No hay tareas disponibles.</p> : (
         <ul>
           {todos.map((todo) => (
             <li key={todo._id} className="todo-item">
