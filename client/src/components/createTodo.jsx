@@ -8,7 +8,7 @@ function CreateTodo({ handleAddTodo }) {
     date: "",
     priority: "Baja",
     done: false,
-    userId: localStorage.getItem('userId') || "",
+    userId: localStorage.getItem('userId') || null, 
   });
 
   const navigate = useNavigate();
@@ -23,12 +23,8 @@ function CreateTodo({ handleAddTodo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.userId) {
-      console.error('El userId es obligatorio');
-      return;
-    }
     handleAddTodo(data);
-    setData({ title: "", description: "", date: "", priority: "Baja", done: false, userId: data.userId });
+    setData({ title: "", description: "", date: "", priority: "Baja", done: false, userId: localStorage.getItem('userId') || null });
   };
 
   return (
