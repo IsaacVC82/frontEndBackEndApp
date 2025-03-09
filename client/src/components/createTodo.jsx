@@ -26,8 +26,14 @@ function CreateTodo({ handleAddTodo }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    
     try {
-      const response = await axios.post(`${API_URL}/api/todo`, data);
+      const response = await axios.post(`${API_URL}/api/todo`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log("Respuesta del servidor:", response.data);
       handleAddTodo(response.data);
       setData({ title: "", description: "", date: "", priority: "Baja", done: false });

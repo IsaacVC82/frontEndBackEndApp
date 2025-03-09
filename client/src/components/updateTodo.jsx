@@ -2,9 +2,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
 
   const [todo, setTodo] = useState({
     title: '',
@@ -17,7 +20,9 @@ const UpdateTodo = ({ fetchTodos }) => {
   useEffect(() => {
     const fetchTodo = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/todo/${id}`);
+        const res = await axios.get(`${API_URL}/api/todo/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const todoData = {
           ...res.data,
           date: res.data.date ? res.data.date.split('T')[0] : '',
@@ -29,7 +34,7 @@ const UpdateTodo = ({ fetchTodos }) => {
     };
 
     fetchTodo();
-  }, [id]);
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -42,7 +47,9 @@ const UpdateTodo = ({ fetchTodos }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`${API_URL}/api/todo/${id}`, todo);
+      await axios.put(`${API_URL}/api/todo/${id}`, todo, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       fetchTodos();
       navigate('/show');
     } catch (err) {
@@ -75,3 +82,4 @@ const UpdateTodo = ({ fetchTodos }) => {
 };
 
 export default UpdateTodo;
+

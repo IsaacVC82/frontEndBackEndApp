@@ -1,37 +1,31 @@
-import React from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-function ShowTodoList({ todos, fetchTodos }) {
-  const navigate = useNavigate();
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/api/todo/${id}`);
-      fetchTodos();
-    } catch (err) {
-      console.error("Error al eliminar la tarea:", err.message);
-    }
-  };
+function ShowTodoList() {
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    axios.get(`${API_URL}/api/todo`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(response => setTodos(response.data))
+    .catch(error => console.error("Error al cargar las tareas:", error));
+  }, []);
 
   return (
     <div className="app-container">
       <h2>Lista de Tareas</h2>
-      {todos.length === 0 ? <p>No hay tareas disponibles.</p> : (
-        <ul>
-          {todos.map((todo) => (
-            <li key={todo._id} className="todo-item">
-              <div><strong>Título:</strong> {todo.title}</div>
-              <div><strong>Descripción:</strong> {todo.description}</div>
-              <div><strong>Fecha:</strong> {todo.date}</div>
-              <div><strong>Prioridad:</strong> {todo.priority}</div>
-              <div><strong>Estado:</strong> {todo.done ? "Hecho" : "Pendiente"}</div>
-              <button onClick={() => navigate(`/update/${todo._id}`)}>Editar</button>
-              <button onClick={() => handleDelete(todo._id)}>Eliminar</button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>{todo.title} - {todo.done ? "Hecho" : "Pendiente"}</li>
+        ))}
+      </ul>
     </div>
   );
 }
