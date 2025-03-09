@@ -1,21 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const Todo = require("../models/todo");
-const authMiddleware = require("../middleware/authMiddleware");
 
-// Obtener las tareas del usuario autenticado
-router.get("/", authMiddleware, async (req, res) => {
+// Simula un usuario autenticado con un `userId` fijo (esto puede ser modificado según el frontend)
+const userId = "user1"; 
+
+// Obtener las tareas del usuario
+router.get("/", async (req, res) => {
   try {
-    const todos = await Todo.find({ userId: req.user.id });
+    const todos = await Todo.find({ userId: userId }); // Filtra por el `userId`
     res.json(todos);
   } catch (err) {
     res.status(500).json({ message: "Error al obtener las tareas" });
   }
 });
 
-// Crear una nueva tarea asociada al usuario autenticado
-router.post("/", authMiddleware, async (req, res) => {
+// Crear una nueva tarea asociada al usuario
+router.post("/", async (req, res) => {
   const { title, description, date, priority, done } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: "El título es obligatorio" });
+  }
 
   const todo = new Todo({
     title,
@@ -23,7 +29,7 @@ router.post("/", authMiddleware, async (req, res) => {
     date,
     priority,
     done,
-    userId: req.user.id,
+    userId: userId, // Asocia la tarea con el `userId` del usuario
   });
 
   try {
@@ -34,10 +40,10 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Actualizar una tarea del usuario autenticado
-router.put("/:id", authMiddleware, async (req, res) => {
+// Actualizar una tarea del usuario
+router.put("/:id", async (req, res) => {
   try {
-    const todo = await Todo.findOne({ _id: req.params.id, userId: req.user.id });
+    const todo = await Todo.findOne({ _id: req.params.id, userId: userId }); // Filtra por `userId`
 
     if (!todo) {
       return res.status(404).json({ message: "Tarea no encontrada" });
@@ -52,10 +58,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Eliminar una tarea del usuario autenticado
-router.delete("/:id", authMiddleware, async (req, res) => {
+// Eliminar una tarea del usuario
+router.delete("/:id", async (req, res) => {
   try {
-    const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: userId }); // Filtra por `userId`
 
     if (!todo) {
       return res.status(404).json({ message: "Tarea no encontrada" });
@@ -68,3 +74,4 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+

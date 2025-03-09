@@ -13,8 +13,9 @@ function CreateTodo({ handleAddTodo }) {
     done: false,
   });
 
-  const token = localStorage.getItem('token');  // Definir el token aquí
-
+  const token = localStorage.getItem('token');
+  console.log('Token:', token);  
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
