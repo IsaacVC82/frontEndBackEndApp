@@ -13,6 +13,8 @@ function CreateTodo({ handleAddTodo }) {
     done: false,
   });
 
+  const token = localStorage.getItem('token');  // Definir el token aquí
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,16 +29,15 @@ function CreateTodo({ handleAddTodo }) {
     e.preventDefault();
     try {
       const response = await axios.post(`${API_URL}/api/todo`, data, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },  // Asegúrate de pasar el token aquí
       });
-      console.log("Tarea creada:", response.data);
+      console.log("Respuesta del servidor:", response.data);
       handleAddTodo(response.data);
       setData({ title: "", description: "", date: "", priority: "Baja", done: false });
     } catch (err) {
       console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
     }
   };
-  
 
   return (
     <div className="app-container">
