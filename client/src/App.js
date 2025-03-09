@@ -1,62 +1,50 @@
-import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import ShowTodoList from "./components/showTodoList";
+import CreateTodo from "./components/createTodo";
+import UpdateTodo from "./components/updateTodo";
+import "./App.scss";
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [newTask, setNewTask] = useState("");
-  const [userId, setUserId] = useState(localStorage.getItem("userId") || "user1");
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-  // Obtener tareas al cargar la aplicación
+  // Función para cargar las tareas desde el backend
+  const fetchTodos = () => {
+    axios
+      .get(`${API_URL}/api/todo`)
+      .then((res) => setTodos(res.data))
+      .catch((err) => console.error("Error al cargar tareas:", err.message));
+  };
+
+  // Cargar las tareas al iniciar la aplicación
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/todo", {
-        headers: {
-          "user-id": userId, // Enviar `userId` en los encabezados
-        },
-      })
-      .then((response) => setTodos(response.data))
-      .catch((error) => console.error("Error al obtener tareas:", error));
-  }, [userId]);
+    fetchTodos();
+  }, []);
 
-  // Manejar la creación de una nueva tarea
-  const handleAddTask = () => {
+  // Función para agregar una nueva tarea
+  const handleAddTodo = (newTodo) => {
     axios
-      .post(
-        "http://localhost:8000/api/todo",
-        { title: newTask },
-        {
-          headers: {
-            "user-id": userId, // Enviar `userId` en los encabezados
-          },
-        }
-      )
-      .then((response) => {
-        setTodos([...todos, response.data]);
-        setNewTask("");
-      })
-      .catch((error) => console.error("Error al agregar tarea:", error));
+      .post(`${API_URL}/api/todo`, newTodo)
+      .then(() => fetchTodos())
+      .catch((err) => console.error("Error al crear la tarea:", err.message));
   };
 
   return (
-    <div>
-      <h1>Mis Tareas</h1>
-      <div>
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Agregar nueva tarea"
-        />
-        <button onClick={handleAddTask}>Agregar tarea</button>
-      </div>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo._id}>
-            {todo.title} <button>Eliminar</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Router>
+      <nav>
+        <ul>
+          <li><Link to="/">Crear Tarea</Link></li>
+          <li><Link to="/show">Ver Lista de Tareas</Link></li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<CreateTodo handleAddTodo={handleAddTodo} />} />
+        <Route path="/show" element={<ShowTodoList todos={todos} fetchTodos={fetchTodos} />} />
+        <Route path="/update/:id" element={<UpdateTodo fetchTodos={fetchTodos} />} />
+      </Routes>
+    </Router>
   );
 }
 
