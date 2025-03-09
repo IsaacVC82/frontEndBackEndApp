@@ -39,8 +39,22 @@ const ShowTodoList = () => {
       <h2>Lista de Tareas</h2>
       <ul>
         {todos.map(todo => (
-          <li key={todo.id}>
-            <span>{todo.title}</span>
+          <li key={todo.id} className="todo-item">
+            <div>
+              <strong>Título:</strong> {todo.title}
+            </div>
+            <div>
+              <strong>Descripción:</strong> {todo.description}
+            </div>
+            <div>
+              <strong>Fecha:</strong> {todo.date}
+            </div>
+            <div>
+              <strong>Prioridad:</strong> {todo.priority}
+            </div>
+            <div>
+              <strong>Completada:</strong> {todo.done ? 'Sí' : 'No'}
+            </div>
             <button onClick={() => handleEdit(todo.id)}>Editar</button>
             <button onClick={() => handleDelete(todo.id)}>Borrar</button>
           </li>
@@ -51,5 +65,6 @@ const ShowTodoList = () => {
 };
 
 export default ShowTodoList;
+
 
 
