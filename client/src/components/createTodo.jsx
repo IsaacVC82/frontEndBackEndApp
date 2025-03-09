@@ -21,12 +21,19 @@ function CreateTodo({ handleAddTodo }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleAddTodo(data);
-    setData({ title: "", description: "", date: "", priority: "Baja", done: false, userId: localStorage.getItem('userId') || null });
+  
+    try {
+      const response = await axios.post(`${API_URL}/api/todo`, data);
+      console.log("Respuesta del servidor:", response.data);
+      handleAddTodo(response.data);
+      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+    } catch (err) {
+      console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
+    }
   };
-
+  
   return (
     <div className="app-container">
       <h2>Crear Nueva Tarea</h2>

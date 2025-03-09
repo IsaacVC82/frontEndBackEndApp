@@ -1,18 +1,20 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization");
+  const token = req.headers["authorization"];
+  
   if (!token) {
-    return res.status(401).json({ message: "Acceso denegado, token no proporcionado" });
+    return res.status(401).json({ message: "No hay token, autorización denegada" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Agrega el usuario autenticado a la solicitud
+    const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
+    req.user = decoded;
     next();
   } catch (err) {
-    res.status(401).json({ message: "Token inválido" });
+    res.status(401).json({ message: "Token no válido" });
   }
 };
 
 module.exports = authMiddleware;
+
