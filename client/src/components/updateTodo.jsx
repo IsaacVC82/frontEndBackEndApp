@@ -5,7 +5,6 @@ import axios from 'axios';
 const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
   const [todo, setTodo] = useState({
     title: '',
@@ -30,7 +29,7 @@ const UpdateTodo = ({ fetchTodos }) => {
     };
 
     fetchTodo();
-  }, [id, API_URL]);
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -56,51 +55,19 @@ const UpdateTodo = ({ fetchTodos }) => {
       <h2>Actualizar Tarea</h2>
       <form onSubmit={handleSubmit}>
         <label>Título:</label>
-        <input
-          type="text"
-          name="title"
-          value={todo.title}
-          onChange={handleChange}
-          required
-        />
-        
+        <input type="text" name="title" value={todo.title} onChange={handleChange} required />
         <label>Descripción:</label>
-        <textarea
-          name="description"
-          value={todo.description}
-          onChange={handleChange}
-          required
-        />
-        
+        <textarea name="description" value={todo.description} onChange={handleChange} required />
         <label>Fecha:</label>
-        <input
-          type="date"
-          name="date"
-          value={todo.date}
-          onChange={handleChange}
-          required
-        />
-        
+        <input type="date" name="date" value={todo.date} onChange={handleChange} required />
         <label>Prioridad:</label>
-        <select
-          name="priority"
-          value={todo.priority}
-          onChange={handleChange}
-          required
-        >
+        <select name="priority" value={todo.priority} onChange={handleChange} required>
           <option value="Baja">Baja</option>
           <option value="Media">Media</option>
           <option value="Alta">Alta</option>
         </select>
-        
         <label>Completada:</label>
-        <input
-          type="checkbox"
-          name="done"
-          checked={todo.done}
-          onChange={handleChange}
-        />
-        
+        <input type="checkbox" name="done" checked={todo.done} onChange={handleChange} />
         <button type="submit">Actualizar Tarea</button>
       </form>
     </div>

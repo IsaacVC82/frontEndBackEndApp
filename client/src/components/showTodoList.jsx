@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function ShowTodoList({ todos, fetchTodos }) {
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
