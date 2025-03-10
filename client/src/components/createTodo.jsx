@@ -29,7 +29,10 @@ function CreateTodo({ handleAddTodo }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/todo`, data, {
+      const response = await axios.post(`${API_URL}/api/todo`, {
+        ...data,
+        userId: token ? JSON.parse(atob(token.split('.')[1])).userId : '', // Obtener userId del token
+      }, {
         headers: { Authorization: `Bearer ${token}` },  // Asegúrate de pasar el token aquí
       });
       console.log("Respuesta del servidor:", response.data);
@@ -66,3 +69,4 @@ function CreateTodo({ handleAddTodo }) {
 }
 
 export default CreateTodo;
+
