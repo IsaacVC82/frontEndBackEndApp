@@ -1,45 +1,45 @@
+// src/App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CreateTodo from './components/createTodo';
 import ShowTodoList from './components/showTodoList';
 import UpdateTodo from './components/updateTodo';
 
 const App = () => {
   const [username, setUsername] = useState('');
-  const [showCreateTodo, setShowCreateTodo] = useState(false);
-  const navigate = useNavigate();
+  const [isUsernameSet, setIsUsernameSet] = useState(false);
 
   const handleUsernameSubmit = (e) => {
     e.preventDefault();
     if (username.trim() !== '') {
-      setShowCreateTodo(true);
-      navigate('/create');
+      setIsUsernameSet(true);
     } else {
-      alert('Por favor ingresa tu nombre de usuario.');
+      alert('Por favor, introduce un nombre de usuario.');
     }
   };
 
   return (
     <Router>
       <div className="app-container">
-        {!showCreateTodo ? (
+        {!isUsernameSet ? (
           <form onSubmit={handleUsernameSubmit}>
-            <label>Introduce tu nombre de usuario:</label>
+            <h2>Introduce tu nombre de usuario</h2>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="Nombre de usuario (se creativo)"
               required
             />
             <button type="submit">Continuar</button>
           </form>
-        ) : null}
-
-        <Routes>
-          <Route path="/create" element={<CreateTodo username={username} />} />
-          <Route path="/show" element={<ShowTodoList />} />
-          <Route path="/update/:id" element={<UpdateTodo />} />
-        </Routes>
+        ) : (
+          <Routes>
+            <Route path="/" element={<CreateTodo username={username} />} />
+            <Route path="/show" element={<ShowTodoList />} />
+            <Route path="/update/:id" element={<UpdateTodo />} />
+          </Routes>
+        )}
       </div>
     </Router>
   );
