@@ -1,63 +1,48 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import CreateTodo from './components/createTodo';  
-
-const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import CreateTodo from './components/createTodo';
+import ShowTodoList from './components/showTodoList';
+import UpdateTodo from './components/updateTodo';
 
 const App = () => {
-    const [todos, setTodos] = useState([]);
-    const [username, setUsername] = useState("");  // Username del usuario
+  const [username, setUsername] = useState('');
+  const [showCreateTodo, setShowCreateTodo] = useState(false);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (username) {
-            fetchTodos();
-        }
-    }, [username]);
+  const handleUsernameSubmit = (e) => {
+    e.preventDefault();
+    if (username.trim() !== '') {
+      setShowCreateTodo(true);
+      navigate('/create');
+    } else {
+      alert('Por favor ingresa tu nombre de usuario.');
+    }
+  };
 
-    const fetchTodos = async () => {
-        try {
-            const response = await axios.get(`${API_URL}/api/todos/${username}`);
-            setTodos(response.data);
-        } catch (err) {
-            console.error("Error al cargar tareas:", err.response ? err.response.data : err.message);
-        }
-    };
-
-    const handleAddTodo = (todo) => {
-        setTodos([...todos, todo]);  // Agregar nueva tarea al estado
-    };
-
-    const handleUsernameChange = (e) => {
-        setUsername(e.target.value);  // Cambiar el username
-    };
-
-    return (
-        <div>
-            <h1>Mis Tareas</h1>
+  return (
+    <Router>
+      <div className="app-container">
+        {!showCreateTodo ? (
+          <form onSubmit={handleUsernameSubmit}>
+            <label>Introduce tu nombre de usuario:</label>
             <input
-                type="text"
-                placeholder="Ingresa tu nombre de usuario"
-                value={username}
-                onChange={handleUsernameChange}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
-            {username && (
-                <div>
-                    <CreateTodo handleAddTodo={handleAddTodo} username={username} />
-                    <ul>
-                        {todos.map((todo) => (
-                            <li key={todo._id}>
-                                <strong>{todo.title}</strong>
-                                <p>{todo.description}</p>
-                                <p>{todo.date}</p>
-                                <p>{todo.priority}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
-    );
+            <button type="submit">Continuar</button>
+          </form>
+        ) : null}
+
+        <Routes>
+          <Route path="/create" element={<CreateTodo username={username} />} />
+          <Route path="/show" element={<ShowTodoList />} />
+          <Route path="/update/:id" element={<UpdateTodo />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 };
 
 export default App;
-
