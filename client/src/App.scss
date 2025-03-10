@@ -1,3 +1,9 @@
+$primary-color: #4c6ef5; 
+$primary-color-hover: #3b56d3; // Azul oscuro para hover
+$secondary-color: #f3f4f6; 
+$border-color: #ddd;
+$shadow-color: rgba(0, 0, 0, 0.1);
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f9fafb;
@@ -12,11 +18,11 @@ body {
   padding: 30px;
   background-color: #fff;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px $shadow-color;
 }
 
 nav {
-  background-color: #1700ea;
+  background-color: $primary-color;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 30px;
@@ -48,10 +54,10 @@ form {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background-color: #f3f4f6;
+  background-color: $secondary-color;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px $shadow-color;
 }
 
 form label {
@@ -61,20 +67,20 @@ form label {
 
 form input, textarea, select {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid $border-color;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
 }
 
 form input:focus, textarea:focus, select:focus {
-  border-color: #1700ea;
+  border-color: $primary-color;
   outline: none;
 }
 
 form button {
   padding: 14px;
-  background-color: #1700ea;
+  background-color: $primary-color;
   color: #fff;
   font-size: 16px;
   font-weight: 600;
@@ -85,16 +91,16 @@ form button {
 }
 
 form button:hover {
-  background-color: #1500c8;
+  background-color: $primary-color-hover;
 }
 
 .todo-item {
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   padding: 20px;
   margin-bottom: 15px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px $shadow-color;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -111,22 +117,22 @@ form button:hover {
 }
 
 .todo-item strong {
-  color: #1700ea;
+  color: $primary-color;
 }
 
 .todo-item a {
-  color: #1700ea;
+  color: $primary-color;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
 .todo-item a:hover {
-  color: #1500c8;
+  color: $primary-color-hover;
 }
 
 h2 {
-  color: #1700ea;
+  color: $primary-color;
   text-align: center;
   font-size: 28px;
   font-weight: 700;
@@ -141,7 +147,7 @@ p {
 
 button {
   padding: 12px 25px;
-  background-color: #1700ea;
+  background-color: $primary-color;
   color: #fff;
   font-size: 16px;
   font-weight: 600;
@@ -152,5 +158,5 @@ button {
 }
 
 button:hover {
-  background-color: #1500c8;
+  background-color: $primary-color-hover;
 }
