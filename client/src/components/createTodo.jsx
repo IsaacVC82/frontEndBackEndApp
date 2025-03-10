@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-const createTodo = ({ handleAddTodo }) => {
+const CreateTodo = ({ handleAddTodo }) => {
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -82,6 +82,6 @@ const createTodo = ({ handleAddTodo }) => {
     );
 };
 
-export default createTodo;
+export default CreateTodo;
 
 
