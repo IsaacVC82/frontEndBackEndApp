@@ -1,72 +1,87 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-function CreateTodo({ handleAddTodo }) {
-  const [data, setData] = useState({
-    title: "",
-    description: "",
-    date: "",
-    priority: "Baja",
-    done: false,
-  });
+const createTodo = ({ handleAddTodo }) => {
+    const [data, setData] = useState({
+        title: "",
+        description: "",
+        date: "",
+        priority: "Baja",
+        done: false
+    });
+    const [username, setUsername] = useState("");  // Username del usuario
 
-  const token = localStorage.getItem('token');
-  console.log('Token:', token);  
-  
-  const navigate = useNavigate();
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setData({ ...data, [name]: value });
+    };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);  // Cambiar el username
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_URL}/api/todo`, {
-        ...data,
-        userId: token ? JSON.parse(atob(token.split('.')[1])).userId : '', // Obtener userId del token
-      }, {
-        headers: { Authorization: `Bearer ${token}` },  // Asegúrate de pasar el token aquí
-      });
-      console.log("Respuesta del servidor:", response.data);
-      handleAddTodo(response.data);
-      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
-    } catch (err) {
-      console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  return (
-    <div className="app-container">
-      <h2>Crear Nueva Tarea</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Título</label>
-        <input type="text" name="title" value={data.title} onChange={handleChange} required />
-        <label>Descripción</label>
-        <input type="text" name="description" value={data.description} onChange={handleChange} required />
-        <label>Fecha</label>
-        <input type="date" name="date" value={data.date} onChange={handleChange} required />
-        <label>Prioridad</label>
-        <select name="priority" value={data.priority} onChange={handleChange}>
-          <option value="Baja">Baja</option>
-          <option value="Media">Media</option>
-          <option value="Alta">Alta</option>
-        </select>
-        <label>Hecho</label>
-        <input type="checkbox" name="done" checked={data.done} onChange={handleChange} />
-        <button type="submit">Crear Tarea</button>
-      </form>
-      <button onClick={() => navigate("/show")}>Ver Lista de Tareas</button>
-    </div>
-  );
-}
+        // Verificar si el username no está vacío
+        if (!username) {
+            alert('Por favor ingresa tu nombre de usuario.');
+            return;
+        }
 
-export default CreateTodo;
+        try {
+            const response = await axios.post(`${API_URL}/api/todo`, { ...data, username });
+            console.log("Respuesta del servidor:", response.data);
+            handleAddTodo(response.data);
+            setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+        } catch (err) {
+            console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
+        }
+    };
+
+    return (
+        <div>
+            <h3>Crear una nueva tarea</h3>
+            <form onSubmit={handleSubmit}>
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Ingresa tu nombre de usuario" 
+                    value={username} 
+                    onChange={handleUsernameChange} 
+                />
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Título de la tarea"
+                    value={data.title}
+                    onChange={handleChange}
+                />
+                <textarea
+                    name="description"
+                    placeholder="Descripción de la tarea"
+                    value={data.description}
+                    onChange={handleChange}
+                />
+                <input
+                    type="date"
+                    name="date"
+                    value={data.date}
+                    onChange={handleChange}
+                />
+                <select name="priority" value={data.priority} onChange={handleChange}>
+                    <option value="Baja">Baja</option>
+                    <option value="Media">Media</option>
+                    <option value="Alta">Alta</option>
+                </select>
+                <button type="submit">Crear tarea</button>
+            </form>
+        </div>
+    );
+};
+
+export default createTodo;
+
 
