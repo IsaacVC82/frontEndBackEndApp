@@ -42,7 +42,7 @@ const App = () => {
             />
             {username && (
                 <div>
-                    <CreateTodo handleAddTodo={handleAddTodo} />
+                    <CreateTodo handleAddTodo={handleAddTodo} username={username} />
                     <ul>
                         {todos.map((todo) => (
                             <li key={todo._id}>
@@ -60,3 +60,4 @@ const App = () => {
 };
 
 export default App;
+

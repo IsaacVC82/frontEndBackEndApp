@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-const CreateTodo = ({ handleAddTodo }) => {
+const CreateTodo = ({ handleAddTodo, username }) => {
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -11,15 +11,10 @@ const CreateTodo = ({ handleAddTodo }) => {
         priority: "Baja",
         done: false
     });
-    const [username, setUsername] = useState("");  // Username del usuario
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData({ ...data, [name]: value });
-    };
-
-    const handleUsernameChange = (e) => {
-        setUsername(e.target.value);  // Cambiar el username
     };
 
     const handleSubmit = async (e) => {
@@ -32,7 +27,7 @@ const CreateTodo = ({ handleAddTodo }) => {
         }
 
         try {
-            const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });  // Asegúrate de enviar username
+            const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
             console.log("Respuesta del servidor:", response.data);
             handleAddTodo(response.data);
             setData({ title: "", description: "", date: "", priority: "Baja", done: false });
@@ -45,13 +40,6 @@ const CreateTodo = ({ handleAddTodo }) => {
         <div>
             <h3>Crear una nueva tarea</h3>
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    name="username" 
-                    placeholder="Ingresa tu nombre de usuario" 
-                    value={username} 
-                    onChange={handleUsernameChange} 
-                />
                 <input
                     type="text"
                     name="title"
@@ -83,4 +71,5 @@ const CreateTodo = ({ handleAddTodo }) => {
 };
 
 export default CreateTodo;
+
 

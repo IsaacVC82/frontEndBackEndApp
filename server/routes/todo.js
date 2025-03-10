@@ -2,25 +2,23 @@ const express = require("express");
 const router = express.Router();
 const Todo = require("../models/todo");
 
-// Simula un usuario autenticado con un `userId` fijo (esto puede ser modificado según el frontend)
-const userId = "user1"; 
-
-// Obtener las tareas del usuario
-router.get("/", async (req, res) => {
+// Obtener las tareas del usuario según el userId enviado desde el frontend
+router.get("/:userId", async (req, res) => {
+  const { userId } = req.params;
   try {
-    const todos = await Todo.find({ userId: userId }); // Filtra por el `userId`
+    const todos = await Todo.find({ userId });
     res.json(todos);
   } catch (err) {
     res.status(500).json({ message: "Error al obtener las tareas" });
   }
 });
 
-// Crear una nueva tarea asociada al usuario
+// Crear una nueva tarea asociada al userId enviado desde el frontend
 router.post("/", async (req, res) => {
-  const { title, description, date, priority, done } = req.body;
+  const { title, description, date, priority, done, userId } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ message: "El título es obligatorio" });
+  if (!title || !userId) {
+    return res.status(400).json({ message: "El título y el userId son obligatorios" });
   }
 
   const todo = new Todo({
@@ -29,7 +27,7 @@ router.post("/", async (req, res) => {
     date,
     priority,
     done,
-    userId: userId, // Asocia la tarea con el `userId` del usuario
+    userId,
   });
 
   try {
@@ -42,14 +40,20 @@ router.post("/", async (req, res) => {
 
 // Actualizar una tarea del usuario
 router.put("/:id", async (req, res) => {
+  const { userId, ...updateData } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId requerido" });
+  }
+
   try {
-    const todo = await Todo.findOne({ _id: req.params.id, userId: userId }); // Filtra por `userId`
+    const todo = await Todo.findOne({ _id: req.params.id, userId });
 
     if (!todo) {
       return res.status(404).json({ message: "Tarea no encontrada" });
     }
 
-    Object.assign(todo, req.body);
+    Object.assign(todo, updateData);
     await todo.save();
 
     res.json(todo);
@@ -60,8 +64,14 @@ router.put("/:id", async (req, res) => {
 
 // Eliminar una tarea del usuario
 router.delete("/:id", async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId requerido" });
+  }
+
   try {
-    const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: userId }); // Filtra por `userId`
+    const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId });
 
     if (!todo) {
       return res.status(404).json({ message: "Tarea no encontrada" });
@@ -74,4 +84,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router;
-
