@@ -13,8 +13,8 @@ const CreateTodo = ({ username }) => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setData({ ...data, [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleSubmit = async (e) => {
@@ -63,6 +63,15 @@ const CreateTodo = ({ username }) => {
           <option value="Media">Media</option>
           <option value="Alta">Alta</option>
         </select>
+        <label>
+          Hecho:
+          <input
+            type="checkbox"
+            name="done"
+            checked={data.done}
+            onChange={handleChange}
+          />
+        </label>
         <button type="submit">Crear tarea</button>
       </form>
     </div>
@@ -70,6 +79,7 @@ const CreateTodo = ({ username }) => {
 };
 
 export default CreateTodo;
+
 
 
 

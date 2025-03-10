@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import CreateTodo from './components/createTodo';
 import ShowTodoList from './components/showTodoList';
 import UpdateTodo from './components/updateTodo';
@@ -33,11 +33,17 @@ const App = () => {
             <button type="submit">Continuar</button>
           </form>
         ) : (
-          <Routes>
-            <Route path="/" element={<CreateTodo username={username} />} />
-            <Route path="/show" element={<ShowTodoList username={username} />} />
-            <Route path="/update/:id" element={<UpdateTodo />} />
-          </Routes>
+          <>
+            <nav>
+              <Link to="/">Crear Tarea</Link> |
+              <Link to="/show">Ver Lista de Tareas</Link>
+            </nav>
+            <Routes>
+              <Route path="/" element={<CreateTodo username={username} />} />
+              <Route path="/show" element={<ShowTodoList username={username} />} />
+              <Route path="/update/:id" element={<UpdateTodo />} />
+            </Routes>
+          </>
         )}
       </div>
     </Router>
@@ -45,4 +51,5 @@ const App = () => {
 };
 
 export default App;
+
 
