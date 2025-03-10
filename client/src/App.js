@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import CreateTodo from './createTodo';
+import CreateTodo from './components/createTodo';  
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
