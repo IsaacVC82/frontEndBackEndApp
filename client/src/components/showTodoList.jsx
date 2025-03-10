@@ -4,20 +4,15 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-const ShowTodoList = () => {
+const ShowTodoList = ({ username }) => {
   const [todos, setTodos] = useState([]);
-  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/todo`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    .then(response => setTodos(response.data))
-    .catch(error => console.error("Error al cargar tareas:", error));
-  }, [token]);
+    axios.get(`${API_URL}/api/todos?username=${username}`)
+      .then(response => setTodos(response.data))
+      .catch(error => console.error("Error al cargar tareas:", error));
+  }, [username]);
 
   const handleEdit = (id) => {
     navigate(`/update/${id}`);
@@ -25,38 +20,26 @@ const ShowTodoList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/todo/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTodos(todos.filter(todo => todo.id !== id));
+      await axios.delete(`${API_URL}/api/todos/${id}`);
+      setTodos(todos.filter(todo => todo._id !== id));
     } catch (error) {
       console.error("Error al borrar la tarea:", error.message);
     }
   };
 
   return (
-    <div className="todo-list-container">
-      <h2>Lista de Tareas</h2>
+    <div>
+      <h2>Lista de Tareas de {username}</h2>
       <ul>
         {todos.map(todo => (
-          <li key={todo.id} className="todo-item">
-            <div>
-              <strong>Título:</strong> {todo.title}
-            </div>
-            <div>
-              <strong>Descripción:</strong> {todo.description}
-            </div>
-            <div>
-              <strong>Fecha:</strong> {todo.date}
-            </div>
-            <div>
-              <strong>Prioridad:</strong> {todo.priority}
-            </div>
-            <div>
-              <strong>Completada:</strong> {todo.done ? 'Sí' : 'No'}
-            </div>
-            <button onClick={() => handleEdit(todo.id)}>Editar</button>
-            <button onClick={() => handleDelete(todo.id)}>Borrar</button>
+          <li key={todo._id}>
+            <p>Título: {todo.title}</p>
+            <p>Descripción: {todo.description}</p>
+            <p>Fecha: {todo.date}</p>
+            <p>Prioridad: {todo.priority}</p>
+            <p>Completada: {todo.done ? "Sí" : "No"}</p>
+            <button onClick={() => handleEdit(todo._id)}>Editar</button>
+            <button onClick={() => handleDelete(todo._id)}>Eliminar</button>
           </li>
         ))}
       </ul>

@@ -3,73 +3,73 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-const CreateTodo = ({ handleAddTodo, username }) => {
-    const [data, setData] = useState({
-        title: "",
-        description: "",
-        date: "",
-        priority: "Baja",
-        done: false
-    });
+const CreateTodo = ({ username }) => {
+  const [data, setData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    priority: "Baja",
+    done: false
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setData({ ...data, [name]: value });
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData({ ...data, [name]: value });
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        // Verificar si el username no está vacío
-        if (!username) {
-            alert('Por favor ingresa tu nombre de usuario.');
-            return;
-        }
+    if (!username) {
+      alert('Por favor, ingresa tu nombre de usuario.');
+      return;
+    }
 
-        try {
-            const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
-            console.log("Respuesta del servidor:", response.data);
-            handleAddTodo(response.data);
-            setData({ title: "", description: "", date: "", priority: "Baja", done: false });
-        } catch (err) {
-            console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
-        }
-    };
+    try {
+      const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
+      console.log("Tarea creada:", response.data);
+      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+    } catch (err) {
+      console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
+    }
+  };
 
-    return (
-        <div>
-            <h3>Crear una nueva tarea</h3>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Título de la tarea"
-                    value={data.title}
-                    onChange={handleChange}
-                />
-                <textarea
-                    name="description"
-                    placeholder="Descripción de la tarea"
-                    value={data.description}
-                    onChange={handleChange}
-                />
-                <input
-                    type="date"
-                    name="date"
-                    value={data.date}
-                    onChange={handleChange}
-                />
-                <select name="priority" value={data.priority} onChange={handleChange}>
-                    <option value="Baja">Baja</option>
-                    <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
-                </select>
-                <button type="submit">Crear tarea</button>
-            </form>
-        </div>
-    );
+  return (
+    <div>
+      <h3>Crear una nueva tarea</h3>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="title"
+          placeholder="Título"
+          value={data.title}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="description"
+          placeholder="Descripción"
+          value={data.description}
+          onChange={handleChange}
+        />
+        <input
+          type="date"
+          name="date"
+          value={data.date}
+          onChange={handleChange}
+        />
+        <select name="priority" value={data.priority} onChange={handleChange}>
+          <option value="Baja">Baja</option>
+          <option value="Media">Media</option>
+          <option value="Alta">Alta</option>
+        </select>
+        <button type="submit">Crear tarea</button>
+      </form>
+    </div>
+  );
 };
 
 export default CreateTodo;
+
 
 

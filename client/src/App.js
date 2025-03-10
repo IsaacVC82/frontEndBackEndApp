@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CreateTodo from './components/createTodo';
@@ -28,7 +27,7 @@ const App = () => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Nombre de usuario (se creativo)"
+              placeholder="Nombre de usuario"
               required
             />
             <button type="submit">Continuar</button>
@@ -36,7 +35,7 @@ const App = () => {
         ) : (
           <Routes>
             <Route path="/" element={<CreateTodo username={username} />} />
-            <Route path="/show" element={<ShowTodoList />} />
+            <Route path="/show" element={<ShowTodoList username={username} />} />
             <Route path="/update/:id" element={<UpdateTodo />} />
           </Routes>
         )}
@@ -46,3 +45,4 @@ const App = () => {
 };
 
 export default App;
+
