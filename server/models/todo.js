@@ -1,15 +1,19 @@
 const mongoose = require('mongoose');
 
-const TodoSchema = new mongoose.Schema({
+const todoSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    date: { type: String, required: true },
-    priority: { type: String, required: true },
-    done: { type: Boolean, required: true },
-    username: { type: String, required: true }  // Asociar tarea al username
+    description: { type: String, required: false },
+    date: { type: Date, required: false },
+    priority: { type: String, required: false },
+    done: { type: Boolean, default: false },
+    username: { type: String, required: true }, 
 });
 
-module.exports = mongoose.model('Todo', TodoSchema);
+// Usa `mongoose.models` para evitar redefinir el modelo si ya existe
+const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
+
+module.exports = Todo;
+
 
 
 
