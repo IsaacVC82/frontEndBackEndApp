@@ -32,7 +32,7 @@ const CreateTodo = ({ handleAddTodo }) => {
         }
 
         try {
-            const response = await axios.post(`${API_URL}/api/todo`, { ...data, username });
+            const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });  // Asegúrate de enviar username
             console.log("Respuesta del servidor:", response.data);
             handleAddTodo(response.data);
             setData({ title: "", description: "", date: "", priority: "Baja", done: false });
@@ -83,5 +83,4 @@ const CreateTodo = ({ handleAddTodo }) => {
 };
 
 export default CreateTodo;
-
 

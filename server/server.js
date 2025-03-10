@@ -21,12 +21,21 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Modelo de Tarea
+const Todo = mongoose.model("Todo", new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String, required: false },
+  date: { type: Date, required: false },
+  priority: { type: String, required: false },
+  done: { type: Boolean, default: false },
+  username: { type: String, required: true },
+}));
+
 // Rutas de tareas
 const todoRoutes = require('./routes/todoRoutes');
-app.use(todoRoutes);
+app.use('/api/todos', todoRoutes);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-
