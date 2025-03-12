@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
 
-const CreateTodo = ({ username }) => {
+const CreateTodo = ({ username, handleAddTodo }) => {
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -12,6 +12,8 @@ const CreateTodo = ({ username }) => {
     done: false
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false); // Evitar envíos múltiples
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setData({ ...data, [name]: type === 'checkbox' ? checked : value });
@@ -19,18 +21,22 @@ const CreateTodo = ({ username }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!username) {
-      alert('Por favor, ingresa tu nombre de usuario.');
+      alert('Por favor ingresa tu nombre de usuario.');
       return;
     }
+    if (isSubmitting) return; // Prevenir doble envío
+
+    setIsSubmitting(true);
 
     try {
       const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
-      console.log("Tarea creada:", response.data);
+      handleAddTodo(response.data); // Añadir la tarea a la lista
       setData({ title: "", description: "", date: "", priority: "Baja", done: false });
     } catch (err) {
-      console.error("Error al crear la tarea:", err.response ? err.response.data : err.message);
+      console.error("Error al crear la tarea:", err.message);
+    } finally {
+      setIsSubmitting(false); // Permitir nuevos envíos
     }
   };
 
@@ -64,6 +70,16 @@ const CreateTodo = ({ username }) => {
           <option value="Alta">Alta</option>
         </select>
         <label>
+        <label>Días de repetición:</label>
+        <select name="days" multiple={true} value={data.days} onChange={handleChange}>
+        <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miércoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+          <option value="Sábado">Sábado</option>
+          <option value="Domingo">Domingo</option>
+        </select>
           Hecho:
           <input
             type="checkbox"
@@ -72,13 +88,17 @@ const CreateTodo = ({ username }) => {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Crear tarea</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Creando..." : "Crear tarea"}
+        </button>
       </form>
     </div>
   );
 };
 
 export default CreateTodo;
+
+
 
 
 

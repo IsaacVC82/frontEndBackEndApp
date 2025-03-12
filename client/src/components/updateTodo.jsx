@@ -15,6 +15,7 @@ const UpdateTodo = ({ fetchTodos }) => {
     date: '',
     priority: 'Baja',
     done: false,
+    days: [],
   });
 
   useEffect(() => {
@@ -37,11 +38,15 @@ const UpdateTodo = ({ fetchTodos }) => {
   }, [id, token]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setTodo((prevState) => ({
-      ...prevState,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, value, type, checked, options } = e.target;
+    if (name === 'days') {
+      const selectedDays = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
+      setTodo({ ...todo, days: selectedDays });
+    } else {
+      setTodo({ ...todo, [name]: type === 'checkbox' ? checked : value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -50,7 +55,7 @@ const UpdateTodo = ({ fetchTodos }) => {
       await axios.put(`${API_URL}/api/todo/${id}`, todo, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchTodos();
+      await fetchTodos();
       navigate('/show');
     } catch (err) {
       console.error("Error al actualizar la tarea:", err.message);
@@ -63,18 +68,34 @@ const UpdateTodo = ({ fetchTodos }) => {
       <form onSubmit={handleSubmit}>
         <label>Título:</label>
         <input type="text" name="title" value={todo.title} onChange={handleChange} required />
+
         <label>Descripción:</label>
         <textarea name="description" value={todo.description} onChange={handleChange} required />
+
         <label>Fecha:</label>
         <input type="date" name="date" value={todo.date} onChange={handleChange} required />
+
         <label>Prioridad:</label>
         <select name="priority" value={todo.priority} onChange={handleChange} required>
           <option value="Baja">Baja</option>
           <option value="Media">Media</option>
           <option value="Alta">Alta</option>
         </select>
+
+        <label>Días de repetición:</label>
+        <select name="days" multiple={true} value={todo.days} onChange={handleChange}>
+          <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miércoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+          <option value="Sábado">Sábado</option>
+          <option value="Domingo">Domingo</option>
+        </select>
+
         <label>Completada:</label>
         <input type="checkbox" name="done" checked={todo.done} onChange={handleChange} />
+
         <button type="submit">Actualizar Tarea</button>
       </form>
     </div>
@@ -82,4 +103,3 @@ const UpdateTodo = ({ fetchTodos }) => {
 };
 
 export default UpdateTodo;
-

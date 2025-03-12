@@ -7,11 +7,17 @@ const todoSchema = new mongoose.Schema({
     priority: { type: String, required: false },
     done: { type: Boolean, default: false },
     username: { type: String, required: true },
+    days: {
+        type: [String],
+        enum: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+        default: []
+    }
 });
 
 const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
 
 module.exports = Todo;
+
 
 
 
