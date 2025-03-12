@@ -70,16 +70,6 @@ const CreateTodo = ({ username, handleAddTodo }) => {
           <option value="Alta">Alta</option>
         </select>
         <label>
-        <label>Días de repetición:</label>
-        <select name="days" multiple={true} value={data.days} onChange={handleChange}>
-        <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sábado</option>
-          <option value="Domingo">Domingo</option>
-        </select>
           Hecho:
           <input
             type="checkbox"

@@ -82,17 +82,6 @@ const UpdateTodo = ({ fetchTodos }) => {
           <option value="Alta">Alta</option>
         </select>
 
-        <label>Días de repetición:</label>
-        <select name="days" multiple={true} value={todo.days} onChange={handleChange}>
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sábado</option>
-          <option value="Domingo">Domingo</option>
-        </select>
-
         <label>Completada:</label>
         <input type="checkbox" name="done" checked={todo.done} onChange={handleChange} />
 
