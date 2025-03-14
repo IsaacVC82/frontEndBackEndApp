@@ -33,12 +33,17 @@ const CreateTodo = ({ username, handleAddTodo }) => {
     try {
       const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
       handleAddTodo(response.data);
-      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+
+      // Limpiar el formulario después de un pequeño retraso
+      setTimeout(() => {
+        setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+        setIsSubmitting(false); // Permitir nuevos envíos
+      }, 300); 
+
       setSuccessMessage("¡Tarea creada exitosamente!");
-      setTimeout(() => setSuccessMessage(""), 3000); // Ocultar mensaje después de 3 segundos
+      setTimeout(() => setSuccessMessage(""), 3000); // Desaparecer el mensaje en 3 segundos
     } catch (err) {
       console.error("Error al crear la tarea:", err.message);
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -86,7 +91,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
           disabled={isSubmitting}
           style={{
             padding: "8px 16px",
-            backgroundColor: isSubmitting ? "#aaa" : "#4caf50",
+            backgroundColor: isSubmitting ? "#0056b3" : "#007bff",
             color: "white",
             border: "none",
             borderRadius: "4px",
@@ -98,7 +103,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
         </button>
       </form>
       {successMessage && (
-        <p style={{ color: "green", marginTop: "10px", transition: "opacity 0.5s ease" }}>
+        <p style={{ color: "blue", marginTop: "10px", transition: "opacity 0.5s ease" }}>
           {successMessage}
         </p>
       )}
@@ -107,6 +112,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
 };
 
 export default CreateTodo;
+
 
 
 
