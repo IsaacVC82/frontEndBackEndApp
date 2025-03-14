@@ -1,112 +1,82 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || "https://frontendbackendapp.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-const CreateTodo = ({ username, handleAddTodo }) => {
-  const [data, setData] = useState({
-    title: "",
-    description: "",
-    date: "",
-    priority: "Baja",
-    done: false
+const CreateTodo = ({ fetchTodos }) => {
+  const token = localStorage.getItem('token');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    priority: 'Baja',
+    done: false,
+    days: [],
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [resetKey, setResetKey] = useState(0); // Clave para forzar re-renderizado
-
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setData({ ...data, [name]: type === 'checkbox' ? checked : value });
+    const { name, value, type, checked, options } = e.target;
+    if (name === 'days') {
+      const selectedDays = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
+      setFormData({ ...formData, days: selectedDays });
+    } else {
+      setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username) {
-      alert('Por favor ingresa tu nombre de usuario.');
-      return;
-    }
-    if (isSubmitting) return;
-
     setIsSubmitting(true);
-
     try {
-      const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
-      handleAddTodo(response.data);
-
-      // Limpiar formulario
-      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
-      setResetKey((prevKey) => prevKey + 1); // Forzar re-render
-
-      setSuccessMessage("¡Tarea creada exitosamente!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      await axios.post(`${API_URL}/api/todo`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        priority: 'Baja',
+        done: false,
+        days: [],
+      });
+      await fetchTodos();
     } catch (err) {
-      console.error("Error al crear la tarea:", err.message);
+      console.error('Error al crear la tarea:', err.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div>
-      <h3>Crear una nueva tarea</h3>
-      <form onSubmit={handleSubmit} key={resetKey}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Título"
-          value={data.title}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Descripción"
-          value={data.description}
-          onChange={handleChange}
-        />
-        <input
-          type="date"
-          name="date"
-          value={data.date}
-          onChange={handleChange}
-        />
-        <select name="priority" value={data.priority} onChange={handleChange}>
+    <div className="app-container">
+      <h2>Crear Tarea</h2>
+      <form onSubmit={handleSubmit}>
+        <label>Título:</label>
+        <input type="text" name="title" value={formData.title} onChange={handleChange} required />
+
+        <label>Descripción:</label>
+        <textarea name="description" value={formData.description} onChange={handleChange} required />
+
+        <label>Fecha:</label>
+        <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+
+        <label>Prioridad:</label>
+        <select name="priority" value={formData.priority} onChange={handleChange} required>
           <option value="Baja">Baja</option>
           <option value="Media">Media</option>
           <option value="Alta">Alta</option>
         </select>
-        <label>
-          Hecho:
-          <input
-            type="checkbox"
-            name="done"
-            checked={data.done}
-            onChange={handleChange}
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: isSubmitting ? "#0056b3" : "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: isSubmitting ? "not-allowed" : "pointer",
-            transition: "background-color 0.3s ease"
-          }}
-        >
-          {isSubmitting ? "Creando..." : "Crear tarea"}
+
+        <label>Completada:</label>
+        <input type="checkbox" name="done" checked={formData.done} onChange={handleChange} />
+
+        <button type="submit" disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? '#3b56d3' : '#4c6ef5', opacity: isSubmitting ? 0.7 : 1 }}>
+          {isSubmitting ? 'Creando...' : 'Crear Tarea'}
         </button>
       </form>
-      {successMessage && (
-        <p style={{ color: "#A7C7E7", marginTop: "10px" }}>
-          {successMessage}
-        </p>
-      )}
     </div>
   );
 };
