@@ -12,7 +12,8 @@ const CreateTodo = ({ username, handleAddTodo }) => {
     done: false
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false); // Evitar envíos múltiples
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,18 +26,20 @@ const CreateTodo = ({ username, handleAddTodo }) => {
       alert('Por favor ingresa tu nombre de usuario.');
       return;
     }
-    if (isSubmitting) return; // Prevenir doble envío
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
 
     try {
       const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
-      handleAddTodo(response.data); // Añadir la tarea a la lista
+      handleAddTodo(response.data);
       setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+      setSuccessMessage("¡Tarea creada exitosamente!");
+      setTimeout(() => setSuccessMessage(""), 3000); // Ocultar mensaje después de 3 segundos
     } catch (err) {
       console.error("Error al crear la tarea:", err.message);
     } finally {
-      setIsSubmitting(false); // Permitir nuevos envíos
+      setIsSubmitting(false);
     }
   };
 
@@ -78,15 +81,33 @@ const CreateTodo = ({ username, handleAddTodo }) => {
             onChange={handleChange}
           />
         </label>
-        <button type="submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: isSubmitting ? "#aaa" : "#4caf50",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            transition: "background-color 0.3s ease"
+          }}
+        >
           {isSubmitting ? "Creando..." : "Crear tarea"}
         </button>
       </form>
+      {successMessage && (
+        <p style={{ color: "green", marginTop: "10px", transition: "opacity 0.5s ease" }}>
+          {successMessage}
+        </p>
+      )}
     </div>
   );
 };
 
 export default CreateTodo;
+
 
 
 

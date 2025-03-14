@@ -18,6 +18,9 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
+    
+     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
