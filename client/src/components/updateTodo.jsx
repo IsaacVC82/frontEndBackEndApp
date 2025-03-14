@@ -18,17 +18,18 @@ const UpdateTodo = ({ fetchTodos }) => {
     days: [],
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     const fetchTodo = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/todo/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        const todoData = {
+        setTodo({
           ...res.data,
           date: res.data.date ? res.data.date.split('T')[0] : '',
-        };
-        setTodo(todoData);
+        });
       } catch (err) {
         console.error("Error al cargar la tarea:", err.message);
       }
@@ -51,14 +52,21 @@ const UpdateTodo = ({ fetchTodos }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await axios.put(`${API_URL}/api/todo/${id}`, todo, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       await fetchTodos();
       navigate('/show');
     } catch (err) {
       console.error("Error al actualizar la tarea:", err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,13 +75,30 @@ const UpdateTodo = ({ fetchTodos }) => {
       <h2>Actualizar Tarea</h2>
       <form onSubmit={handleSubmit}>
         <label>Título:</label>
-        <input type="text" name="title" value={todo.title} onChange={handleChange} required />
+        <input
+          type="text"
+          name="title"
+          value={todo.title}
+          onChange={handleChange}
+          required
+        />
 
         <label>Descripción:</label>
-        <textarea name="description" value={todo.description} onChange={handleChange} required />
+        <textarea
+          name="description"
+          value={todo.description}
+          onChange={handleChange}
+          required
+        />
 
         <label>Fecha:</label>
-        <input type="date" name="date" value={todo.date} onChange={handleChange} required />
+        <input
+          type="date"
+          name="date"
+          value={todo.date}
+          onChange={handleChange}
+          required
+        />
 
         <label>Prioridad:</label>
         <select name="priority" value={todo.priority} onChange={handleChange} required>
@@ -83,12 +108,20 @@ const UpdateTodo = ({ fetchTodos }) => {
         </select>
 
         <label>Completada:</label>
-        <input type="checkbox" name="done" checked={todo.done} onChange={handleChange} />
+        <input
+          type="checkbox"
+          name="done"
+          checked={todo.done}
+          onChange={handleChange}
+        />
 
-        <button type="submit">Actualizar Tarea</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Actualizando..." : "Actualizar Tarea"}
+        </button>
       </form>
     </div>
   );
 };
 
 export default UpdateTodo;
+

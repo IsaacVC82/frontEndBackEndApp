@@ -14,6 +14,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [resetKey, setResetKey] = useState(0); // Clave para forzar re-renderizado
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -34,16 +35,15 @@ const CreateTodo = ({ username, handleAddTodo }) => {
       const response = await axios.post(`${API_URL}/api/todos`, { ...data, username });
       handleAddTodo(response.data);
 
-      // Limpiar el formulario después de un pequeño retraso
-      setTimeout(() => {
-        setData({ title: "", description: "", date: "", priority: "Baja", done: false });
-        setIsSubmitting(false); // Permitir nuevos envíos
-      }, 300); 
+      // Limpiar formulario
+      setData({ title: "", description: "", date: "", priority: "Baja", done: false });
+      setResetKey((prevKey) => prevKey + 1); // Forzar re-render
 
       setSuccessMessage("¡Tarea creada exitosamente!");
-      setTimeout(() => setSuccessMessage(""), 3000); // Desaparecer el mensaje en 3 segundos
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
       console.error("Error al crear la tarea:", err.message);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -51,7 +51,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
   return (
     <div>
       <h3>Crear una nueva tarea</h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} key={resetKey}>
         <input
           type="text"
           name="title"
@@ -103,7 +103,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
         </button>
       </form>
       {successMessage && (
-        <p style={{ color: "blue", marginTop: "10px", transition: "opacity 0.5s ease" }}>
+        <p style={{ color: "#A7C7E7", marginTop: "10px" }}>
           {successMessage}
         </p>
       )}
@@ -112,6 +112,7 @@ const CreateTodo = ({ username, handleAddTodo }) => {
 };
 
 export default CreateTodo;
+
 
 
 
