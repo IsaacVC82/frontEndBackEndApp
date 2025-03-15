@@ -22,7 +22,7 @@ const UpdateTodo = ({ fetchTodos }) => {
   useEffect(() => {
     const fetchTodo = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/todo/${id}`, {
+        const res = await axios.get(`${API_URL}/api/todos/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const todoData = {

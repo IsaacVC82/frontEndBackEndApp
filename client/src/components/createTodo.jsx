@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
-
-const CreateTodo = ({ fetchTodos }) => {
+const API_URL = process.env.REACT_APP_API_URL;
+const CreateTodo = ({ fetchTodos, username }) => {
   const token = localStorage.getItem('token');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,6 +12,7 @@ const CreateTodo = ({ fetchTodos }) => {
     priority: 'Baja',
     done: false,
     days: [],
+    username: username || '', 
   });
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ const CreateTodo = ({ fetchTodos }) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await axios.post(`${API_URL}/api/todo`, formData, {
+      await axios.post(`${API_URL}/api/todos`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFormData({
@@ -41,10 +41,11 @@ const CreateTodo = ({ fetchTodos }) => {
         priority: 'Baja',
         done: false,
         days: [],
+        username: username || '',
       });
       await fetchTodos();
     } catch (err) {
-      console.error('Error al crear la tarea:', err.message);
+      console.error('Error al crear la tarea:', err.response ? err.response.data : err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -82,11 +83,6 @@ const CreateTodo = ({ fetchTodos }) => {
 };
 
 export default CreateTodo;
-
-
-
-
-
 
 
 
