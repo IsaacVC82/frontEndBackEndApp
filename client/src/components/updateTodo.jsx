@@ -8,6 +8,7 @@ const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const username = localStorage.getItem('username'); 
 
   const [todo, setTodo] = useState({
     title: '',
@@ -54,7 +55,8 @@ const UpdateTodo = ({ fetchTodos }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.put(`${API_URL}/api/todo/${id}`, todo, {
+      const updatedTodo = { ...todo, username };
+      await axios.put(`${API_URL}/api/todos/${id}`, updatedTodo, {
         headers: { Authorization: `Bearer ${token}` }
       });
       await fetchTodos();
@@ -98,5 +100,6 @@ const UpdateTodo = ({ fetchTodos }) => {
 };
 
 export default UpdateTodo;
+
 
 
