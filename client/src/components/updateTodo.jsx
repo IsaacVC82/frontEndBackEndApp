@@ -60,7 +60,17 @@ const UpdateTodo = ({ fetchTodos }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       await fetchTodos();
-      setTodo({ title: '', description: '', date: '', priority: 'Baja', done: false, days: [] });
+
+      // 🧹 Limpiar los campos del formulario después de actualizar la tarea
+      setTodo({
+        title: '',
+        description: '',
+        date: '',
+        priority: 'Baja',
+        done: false,
+        days: [],
+      });
+
       navigate('/show');
     } catch (err) {
       console.error("Error al actualizar la tarea:", err.response ? err.response.data : err.message);
@@ -101,6 +111,7 @@ const UpdateTodo = ({ fetchTodos }) => {
 };
 
 export default UpdateTodo;
+
 
 
 

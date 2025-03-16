@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL;
+
 const CreateTodo = ({ fetchTodos, username }) => {
   const token = localStorage.getItem('token');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,9 +13,10 @@ const CreateTodo = ({ fetchTodos, username }) => {
     priority: 'Baja',
     done: false,
     days: [],
-    username: username || '', 
+    username: username || '',
   });
 
+  // Manejar cambios en los inputs
   const handleChange = (e) => {
     const { name, value, type, checked, options } = e.target;
     if (name === 'days') {
@@ -27,6 +29,7 @@ const CreateTodo = ({ fetchTodos, username }) => {
     }
   };
 
+  // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -34,21 +37,26 @@ const CreateTodo = ({ fetchTodos, username }) => {
       await axios.post(`${API_URL}/api/todos`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFormData({
-        title: '',
-        description: '',
-        date: '',
-        priority: 'Baja',
-        done: false,
-        days: [],
-        username: username || '',
-      });
+      handleReset(); // Limpiar campos después de enviar
       await fetchTodos();
     } catch (err) {
       console.error('Error al crear la tarea:', err.response ? err.response.data : err.message);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Función para borrar campos
+  const handleReset = () => {
+    setFormData({
+      title: '',
+      description: '',
+      date: '',
+      priority: 'Baja',
+      done: false,
+      days: [],
+      username: username || '',
+    });
   };
 
   return (
@@ -74,15 +82,21 @@ const CreateTodo = ({ fetchTodos, username }) => {
         <label>Completada:</label>
         <input type="checkbox" name="done" checked={formData.done} onChange={handleChange} />
 
-        <button type="submit" disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? '#3b56d3' : '#4c6ef5', opacity: isSubmitting ? 0.7 : 1 }}>
-          {isSubmitting ? 'Creando...' : 'Crear Tarea'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <button type="submit" disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? '#3b56d3' : '#4c6ef5', opacity: isSubmitting ? 0.7 : 1 }}>
+            {isSubmitting ? 'Creando...' : 'Crear Tarea'}
+          </button>
+          <button type="button" onClick={handleReset} style={{ backgroundColor: '#d9534f', color: 'white' }}>
+            Borrar Campos
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
 export default CreateTodo;
+
 
 
 
