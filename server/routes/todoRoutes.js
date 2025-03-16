@@ -40,20 +40,19 @@ router.get("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, priority, done, username } = req.body;
+    const { title, description, date, priority, done } = req.body;
 
-    if (!username) {
-      return res.status(400).json({ message: "El nombre de usuario es obligatorio" });
-    }
+    console.log("ID recibido:", id);
+    console.log("Datos recibidos:", req.body);
 
-    const updatedTodo = await Todo.findOneAndUpdate(
-      { _id: id, username }, // Asegurarse de que la tarea pertenece al usuario
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
       { title, description, date, priority, done },
-      { new: true } // Para devolver la tarea actualizada
+      { new: true } // Devuelve la tarea actualizada
     );
 
     if (!updatedTodo) {
-      return res.status(404).json({ message: "Tarea no encontrada o no pertenece al usuario" });
+      return res.status(404).json({ message: "Tarea no encontrada" });
     }
 
     res.status(200).json(updatedTodo);
@@ -63,19 +62,18 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+
 // Eliminar una tarea
 router.delete("/:id", async (req, res) => {
   try {
-    const { username } = req.query;
+    const { id } = req.params;
 
-    if (!username) {
-      return res.status(400).json({ message: "El nombre de usuario es obligatorio" });
-    }
+    console.log("ID recibido para eliminar:", id);
 
-    const deletedTodo = await Todo.findOneAndDelete({ _id: req.params.id, username });
+    const deletedTodo = await Todo.findByIdAndDelete(id);
 
     if (!deletedTodo) {
-      return res.status(404).json({ message: "Tarea no encontrada o no pertenece al usuario" });
+      return res.status(404).json({ message: "Tarea no encontrada" });
     }
 
     res.status(200).json({ message: "Tarea eliminada correctamente" });
@@ -84,6 +82,7 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 });
+
 
 module.exports = router;
 
