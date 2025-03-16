@@ -82,14 +82,9 @@ const CreateTodo = ({ fetchTodos, username }) => {
         <label>Completada:</label>
         <input type="checkbox" name="done" checked={formData.done} onChange={handleChange} />
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <button type="submit" disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? '#3b56d3' : '#4c6ef5', opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Creando...' : 'Crear Tarea'}
           </button>
-          <button type="button" onClick={handleReset} style={{ backgroundColor: '#d9534f', color: 'white' }}>
-            Borrar Campos
-          </button>
-        </div>
       </form>
     </div>
   );

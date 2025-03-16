@@ -78,6 +78,8 @@ const UpdateTodo = ({ fetchTodos }) => {
       setLoading(false);
     }
   };
+  
+
 
   return (
     <div className="app-container">
@@ -105,6 +107,7 @@ const UpdateTodo = ({ fetchTodos }) => {
         <button type="submit" style={{ backgroundColor: loading ? '#3b56d3' : '#4c6ef5', cursor: loading ? 'not-allowed' : 'pointer' }} disabled={loading}>
           {loading ? 'Actualizando...' : 'Actualizar Tarea'}
         </button>
+        
       </form>
     </div>
   );
