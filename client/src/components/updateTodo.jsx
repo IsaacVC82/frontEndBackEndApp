@@ -8,7 +8,7 @@ const UpdateTodo = ({ fetchTodos }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const username = localStorage.getItem('username'); 
+  const username = localStorage.getItem('username');
 
   const [todo, setTodo] = useState({
     title: '',
@@ -60,6 +60,7 @@ const UpdateTodo = ({ fetchTodos }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       await fetchTodos();
+      setTodo({ title: '', description: '', date: '', priority: 'Baja', done: false, days: [] });
       navigate('/show');
     } catch (err) {
       console.error("Error al actualizar la tarea:", err.response ? err.response.data : err.message);
@@ -100,6 +101,7 @@ const UpdateTodo = ({ fetchTodos }) => {
 };
 
 export default UpdateTodo;
+
 
 
 
