@@ -59,9 +59,8 @@ const UpdateTodo = ({ fetchTodos }) => {
       await axios.put(`${API_URL}/api/todos/${id}`, updatedTodo, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      await fetchTodos();
 
-      // 🧹 Limpiar los campos del formulario después de actualizar la tarea
+      // Limpia los campos antes de realizar la navegación
       setTodo({
         title: '',
         description: '',
@@ -71,6 +70,10 @@ const UpdateTodo = ({ fetchTodos }) => {
         days: [],
       });
 
+      // Actualiza los todos
+      await fetchTodos();
+
+      // Navega después de limpiar los campos
       navigate('/show');
     } catch (err) {
       console.error("Error al actualizar la tarea:", err.response ? err.response.data : err.message);
@@ -78,8 +81,6 @@ const UpdateTodo = ({ fetchTodos }) => {
       setLoading(false);
     }
   };
-  
-
 
   return (
     <div className="app-container">
@@ -107,13 +108,13 @@ const UpdateTodo = ({ fetchTodos }) => {
         <button type="submit" style={{ backgroundColor: loading ? '#3b56d3' : '#4c6ef5', cursor: loading ? 'not-allowed' : 'pointer' }} disabled={loading}>
           {loading ? 'Actualizando...' : 'Actualizar Tarea'}
         </button>
-        
       </form>
     </div>
   );
 };
 
 export default UpdateTodo;
+
 
 
 
