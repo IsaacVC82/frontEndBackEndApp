@@ -1,82 +1,69 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const UpdateTodo = ({ todoId }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [priority, setPriority] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
+  const [priority, setPriority] = useState('Baja');
   const [done, setDone] = useState(false);
-  const [holidays, setHolidays] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Estado de carga
 
-  // Función para obtener los días festivos
-  const fetchHolidays = async (country, year) => {
-    try {
-      const response = await fetch(`/api/holidays?country=${country}&year=${year}`);
-      const data = await response.json();
-      setHolidays(data.response.holidays); // Establecer días festivos obtenidos
-    } catch (error) {
-      console.error("Error al obtener los días festivos:", error);
-    }
-  };
-
-  // Llamada a la API cuando el componente se monta
   useEffect(() => {
-    fetchHolidays('MX', '2025'); // Obtener días festivos para México en 2025
-    // Obtener datos de la tarea a actualizar
+    // Obtener los detalles de la tarea para actualizar
     const fetchTodo = async () => {
-      const response = await fetch(`/api/todos/${todoId}`);
-      const data = await response.json();
-      setTitle(data.title);
-      setDescription(data.description);
-      setDate(data.date);
-      setPriority(data.priority);
-      setDone(data.done);
+      try {
+        // Suponiendo que la URL de la API para obtener una tarea por ID es /api/calendar/todos/:id
+        const response = await axios.get(`/api/calendar/todos/${todoId}`);
+        const todo = response.data;
+        setTitle(todo.title);
+        setDescription(todo.description);
+        setDate(todo.date);
+        setPriority(todo.priority);
+        setDone(todo.done);
+      } catch (err) {
+        console.error('Error al obtener la tarea:', err);
+        setError('No se pudo obtener la tarea. Intenta nuevamente.');
+      }
     };
 
     fetchTodo();
   }, [todoId]);
 
-  // Manejar el submit del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const updatedTodo = {
-      title,
-      description,
-      date,
-      priority,
-      done,
-    };
+    setLoading(true); // Iniciar la carga
 
     try {
-      const response = await fetch(`/api/todos/${todoId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTodo),
+      const response = await axios.put(`https://calendarific.com/api/v2/holidays/${todoId}`, {
+        title,
+        description,
+        date,
+        priority,
+        done,
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Tarea actualizada:", data);
-
-        // Limpiar los campos después de actualizar la tarea
-        setTitle("");
-        setDescription("");
-        setDate("");
-        setPriority("");
-        setDone(false);
-        setHolidays([]); // Limpiar los días festivos si es necesario
-      } else {
-        console.error("Error al actualizar tarea:", data.message);
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.log('Tarea actualizada:', response.data);
+      
+      // Limpiar los campos después de la actualización
+      setTitle('');
+      setDescription('');
+      setDate('');
+      setPriority('Baja');
+      setDone(false);
+    } catch (err) {
+      console.error('Error al actualizar la tarea:', err);
+      setError('No se pudo actualizar la tarea. Intenta nuevamente.');
+    } finally {
+      setLoading(false); // Finalizar la carga
     }
   };
 
   return (
     <div>
       <h2>Actualizar Tarea</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {loading && <div className="loading-spinner">Cargando...</div>} {/* Animación de carga */}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Título:</label>
@@ -89,8 +76,7 @@ const UpdateTodo = ({ todoId }) => {
         </div>
         <div>
           <label>Descripción:</label>
-          <input
-            type="text"
+          <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -105,38 +91,32 @@ const UpdateTodo = ({ todoId }) => {
         </div>
         <div>
           <label>Prioridad:</label>
-          <input
-            type="text"
+          <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-          />
+          >
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
         </div>
         <div>
-          <label>Completada:</label>
+          <label>Completado:</label>
           <input
             type="checkbox"
             checked={done}
-            onChange={() => setDone(!done)}
+            onChange={(e) => setDone(e.target.checked)}
           />
         </div>
-        <button type="submit">Actualizar Tarea</button>
+        <button type="submit" disabled={loading}>Actualizar Tarea</button>
       </form>
-
-      <div>
-        <h3>Días Festivos en México (2025):</h3>
-        <ul>
-          {holidays.map((holiday) => (
-            <li key={holiday.date.iso}>
-              {holiday.name} - {holiday.date.iso}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
 
 export default UpdateTodo;
+
+
 
 
 

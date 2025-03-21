@@ -1,73 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const CreateTodo = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [priority, setPriority] = useState("");
+const CreateTodo = ({ username }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
+  const [priority, setPriority] = useState('Baja'); // Prioridad predeterminada
   const [done, setDone] = useState(false);
-  const [username, setUsername] = useState("");
-  const [holidays, setHolidays] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Estado de carga
 
-  // Función para obtener los días festivos
-  const fetchHolidays = async (country, year) => {
-    try {
-      const response = await fetch(`/api/holidays?country=${country}&year=${year}`);
-      const data = await response.json();
-      setHolidays(data.response.holidays); // Establecer días festivos obtenidos
-    } catch (error) {
-      console.error("Error al obtener los días festivos:", error);
-    }
-  };
-
-  // Llamada a la API cuando el componente se monta
-  useEffect(() => {
-    fetchHolidays('MX', '2025'); // Obtener días festivos para México en 2025
-  }, []);
-
-  // Manejar el submit del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newTodo = {
-      title,
-      description,
-      date,
-      priority,
-      done,
-      username,
-    };
+    setLoading(true); // Iniciar la carga
 
     try {
-      const response = await fetch("/api/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newTodo),
+      const response = await axios.post('https://calendarific.com/api/v2/holidays', {
+        title,
+        description,
+        date,
+        priority,
+        done,
+        username,
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Tarea creada:", data);
-
-        // Limpiar los campos después de crear la tarea
-        setTitle("");
-        setDescription("");
-        setDate("");
-        setPriority("");
-        setDone(false);
-        setUsername("");
-        setHolidays([]); // Limpiar los días festivos si es necesario
-      } else {
-        console.error("Error al crear tarea:", data.message);
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.log('Tarea creada:', response.data);
+      
+      // Limpiar los campos después de la creación
+      setTitle('');
+      setDescription('');
+      setDate('');
+      setPriority('Baja');
+      setDone(false);
+    } catch (err) {
+      console.error('Error al crear la tarea:', err);
+      setError('No se pudo crear la tarea. Intenta nuevamente.');
+    } finally {
+      setLoading(false); // Finalizar la carga
     }
   };
 
   return (
     <div>
       <h2>Crear Tarea</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {loading && <div className="loading-spinner">Cargando...</div>} {/* Animación de carga */}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Título:</label>
@@ -80,8 +56,7 @@ const CreateTodo = () => {
         </div>
         <div>
           <label>Descripción:</label>
-          <input
-            type="text"
+          <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -96,47 +71,32 @@ const CreateTodo = () => {
         </div>
         <div>
           <label>Prioridad:</label>
-          <input
-            type="text"
+          <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-          />
+          >
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
         </div>
         <div>
-          <label>Completada:</label>
+          <label>Completado:</label>
           <input
             type="checkbox"
             checked={done}
-            onChange={() => setDone(!done)}
+            onChange={(e) => setDone(e.target.checked)}
           />
         </div>
-        <div>
-          <label>Nombre de Usuario:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Crear Tarea</button>
+        <button type="submit" disabled={loading}>Crear Tarea</button>
       </form>
-
-      <div>
-        <h3>Días Festivos en México (2025):</h3>
-        <ul>
-          {holidays.map((holiday) => (
-            <li key={holiday.date.iso}>
-              {holiday.name} - {holiday.date.iso}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
 
 export default CreateTodo;
+
+
 
 
 
