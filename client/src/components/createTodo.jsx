@@ -1,21 +1,47 @@
-import React, { useState } from 'react';
+// CreateTodo.jsx
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TodoCalendar from './TodoCalendar'; // Importa el componente TodoCalendar
 
 const CreateTodo = ({ username }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
-  const [priority, setPriority] = useState('Baja'); // Prioridad predeterminada
+  const [priority, setPriority] = useState('Baja');
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [loading, setLoading] = useState(false);
+  const [holidays, setHolidays] = useState([]); // Para almacenar los días festivos
 
+  // Obtener días festivos desde Calendarific
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY; 
+        const response = await axios.get('https://calendarific.com/api/v2/holidays', {
+          params: {
+            api_key: apiKey, // Usa la API key
+            country: 'MX', 
+            year: 2025,
+          },
+        });
+        setHolidays(response.data.response.holidays); // Guarda los días festivos
+      } catch (error) {
+        console.error('Error al obtener los días festivos:', error);
+      }
+    };
+
+    fetchHolidays();
+  }, []);
+
+  // Función para enviar la tarea a tu API
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Iniciar la carga
+    setLoading(true);
 
     try {
-      const response = await axios.post('https://calendarific.com/api/v2/holidays', {
+      // Enviar datos de la tarea a tu API
+      const response = await axios.post('https://frontendbackendapp.onrender.com', {
         title,
         description,
         date,
@@ -24,8 +50,8 @@ const CreateTodo = ({ username }) => {
         username,
       });
       console.log('Tarea creada:', response.data);
-      
-      // Limpiar los campos después de la creación
+
+      // Limpiar campos después de la creación
       setTitle('');
       setDescription('');
       setDate('');
@@ -35,7 +61,7 @@ const CreateTodo = ({ username }) => {
       console.error('Error al crear la tarea:', err);
       setError('No se pudo crear la tarea. Intenta nuevamente.');
     } finally {
-      setLoading(false); // Finalizar la carga
+      setLoading(false);
     }
   };
 
@@ -43,7 +69,7 @@ const CreateTodo = ({ username }) => {
     <div>
       <h2>Crear Tarea</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {loading && <div className="loading-spinner">Cargando...</div>} {/* Animación de carga */}
+      {loading && <div>Cargando...</div>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Título:</label>
@@ -63,11 +89,7 @@ const CreateTodo = ({ username }) => {
         </div>
         <div>
           <label>Fecha:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <TodoCalendar selectedDate={date} setSelectedDate={setDate} holidays={holidays} /> {/* Pasa los días festivos a TodoCalendar */}
         </div>
         <div>
           <label>Prioridad:</label>
@@ -95,6 +117,7 @@ const CreateTodo = ({ username }) => {
 };
 
 export default CreateTodo;
+
 
 
 

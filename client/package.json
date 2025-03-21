@@ -11,6 +11,7 @@
     "jest": "^27.5.1",
     "node-sass": "^7.0.3",
     "react": "^19.0.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
     "react-scripts": "5.0.1",
@@ -18,8 +19,7 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    
-     "lint": "eslint .",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "react-scripts start",
     "build": "react-scripts build",
