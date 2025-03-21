@@ -1,96 +1,146 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
 
-const API_URL = process.env.REACT_APP_API_URL;
+const CreateTodo = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [priority, setPriority] = useState("");
+  const [done, setDone] = useState(false);
+  const [username, setUsername] = useState("");
+  const [holidays, setHolidays] = useState([]);
 
-const CreateTodo = ({ fetchTodos, username }) => {
-  const token = localStorage.getItem('token');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    date: '',
-    priority: 'Baja',
-    done: false,
-    days: [],
-    username: username || '',
-  });
-
-  // Manejar cambios en los inputs
-  const handleChange = (e) => {
-    const { name, value, type, checked, options } = e.target;
-    if (name === 'days') {
-      const selectedDays = Array.from(options)
-        .filter(option => option.selected)
-        .map(option => option.value);
-      setFormData({ ...formData, days: selectedDays });
-    } else {
-      setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+  // Función para obtener los días festivos
+  const fetchHolidays = async (country, year) => {
+    try {
+      const response = await fetch(`/api/holidays?country=${country}&year=${year}`);
+      const data = await response.json();
+      setHolidays(data.response.holidays); // Establecer días festivos obtenidos
+    } catch (error) {
+      console.error("Error al obtener los días festivos:", error);
     }
   };
 
-  // Manejar envío del formulario
+  // Llamada a la API cuando el componente se monta
+  useEffect(() => {
+    fetchHolidays('MX', '2025'); // Obtener días festivos para México en 2025
+  }, []);
+
+  // Manejar el submit del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await axios.post(`${API_URL}/api/todos`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      handleReset(); // Limpiar campos después de enviar
-      await fetchTodos();
-    } catch (err) {
-      console.error('Error al crear la tarea:', err.response ? err.response.data : err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    const newTodo = {
+      title,
+      description,
+      date,
+      priority,
+      done,
+      username,
+    };
 
-  // Función para borrar campos
-  const handleReset = () => {
-    setFormData({
-      title: '',
-      description: '',
-      date: '',
-      priority: 'Baja',
-      done: false,
-      days: [],
-      username: username || '',
-    });
+    try {
+      const response = await fetch("/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTodo),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Tarea creada:", data);
+
+        // Limpiar los campos después de crear la tarea
+        setTitle("");
+        setDescription("");
+        setDate("");
+        setPriority("");
+        setDone(false);
+        setUsername("");
+        setHolidays([]); // Limpiar los días festivos si es necesario
+      } else {
+        console.error("Error al crear tarea:", data.message);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
   };
 
   return (
-    <div className="app-container">
+    <div>
       <h2>Crear Tarea</h2>
       <form onSubmit={handleSubmit}>
-        <label>Título:</label>
-        <input type="text" name="title" value={formData.title} onChange={handleChange} required />
-
-        <label>Descripción:</label>
-        <textarea name="description" value={formData.description} onChange={handleChange} required />
-
-        <label>Fecha:</label>
-        <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-
-        <label>Prioridad:</label>
-        <select name="priority" value={formData.priority} onChange={handleChange} required>
-          <option value="Baja">Baja</option>
-          <option value="Media">Media</option>
-          <option value="Alta">Alta</option>
-        </select>
-
-        <label>Completada:</label>
-        <input type="checkbox" name="done" checked={formData.done} onChange={handleChange} />
-
-          <button type="submit" disabled={isSubmitting} style={{ backgroundColor: isSubmitting ? '#3b56d3' : '#4c6ef5', opacity: isSubmitting ? 0.7 : 1 }}>
-            {isSubmitting ? 'Creando...' : 'Crear Tarea'}
-          </button>
+        <div>
+          <label>Título:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Descripción:</label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Fecha:</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Prioridad:</label>
+          <input
+            type="text"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Completada:</label>
+          <input
+            type="checkbox"
+            checked={done}
+            onChange={() => setDone(!done)}
+          />
+        </div>
+        <div>
+          <label>Nombre de Usuario:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Crear Tarea</button>
       </form>
+
+      <div>
+        <h3>Días Festivos en México (2025):</h3>
+        <ul>
+          {holidays.map((holiday) => (
+            <li key={holiday.date.iso}>
+              {holiday.name} - {holiday.date.iso}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
 
 export default CreateTodo;
+
+
+
+
 
 
 
