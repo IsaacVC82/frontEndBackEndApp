@@ -89,8 +89,8 @@ const CreateTodo = ({ username }) => {
         </div>
         <div>
           <label>Fecha:</label>
-          <TodoCalendar selectedDate={date} setSelectedDate={setDate} holidays={holidays} /> {/* Pasa los días festivos a TodoCalendar */}
-        </div>
+          <TodoCalendar selectedDate={date ? new Date(date) : new Date()} setSelectedDate={setDate} holidays={holidays} />
+          </div>
         <div>
           <label>Prioridad:</label>
           <select

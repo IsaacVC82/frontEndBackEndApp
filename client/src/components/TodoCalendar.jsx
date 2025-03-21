@@ -9,14 +9,15 @@ const TodoCalendar = ({ selectedDate, setSelectedDate }) => {
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
+        const apiKey = process.env.CALENDARIFIC_API_KEY; 
         const response = await axios.get('https://calendarific.com/api/v2/holidays', {
           params: {
-            api_key: 'YOUR_API_KEY',
+            api_key: apiKey,
             country: 'MX',
             year: 2025,
           },
         });
-        setHolidays(response.data.response.holidays);
+        setHolidays(response.data.response.holidays || []);
       } catch (error) {
         console.error('Error al obtener los días festivos:', error);
       }
@@ -28,9 +29,7 @@ const TodoCalendar = ({ selectedDate, setSelectedDate }) => {
   const getTileClassName = ({ date, view }) => {
     if (view === 'month') {
       const dateStr = date.toISOString().split('T')[0]; // Formato yyyy-mm-dd
-      return holidays.some((holiday) => holiday.date.iso === dateStr)
-        ? 'holiday' // Clase CSS para días festivos
-        : '';
+      return holidays.some((holiday) => holiday.date.iso === dateStr) ? 'holiday' : '';
     }
     return '';
   };
@@ -39,11 +38,11 @@ const TodoCalendar = ({ selectedDate, setSelectedDate }) => {
     <div>
       <h2>Selecciona una fecha</h2>
       <Calendar
-        onChange={setSelectedDate}
-        value={selectedDate}
+        onChange={(date) => setSelectedDate(new Date(date))} 
+        value={selectedDate ? new Date(selectedDate) : new Date()}
         tileClassName={getTileClassName}
       />
-      <p>Fecha seleccionada: {selectedDate.toDateString()}</p>
+      <p>Fecha seleccionada: {selectedDate ? new Date(selectedDate).toDateString() : 'Ninguna'}</p>
     </div>
   );
 };
