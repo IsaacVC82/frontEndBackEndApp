@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import CreateTodo from './components/createTodo';
 import ShowTodoList from './components/showTodoList';
 import UpdateTodo from './components/updateTodo';
+import { useParams } from 'react-router-dom';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -41,8 +42,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<CreateTodo username={username} />} />
               <Route path="/show" element={<ShowTodoList username={username} />} />
-              <Route path="/update/:id" element={<UpdateTodo />} />
-            </Routes>
+              <Route path="/update/:id" element={<UpdateTodo username={username} />} />
+              </Routes>
           </>
         )}
       </div>

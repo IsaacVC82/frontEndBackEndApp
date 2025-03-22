@@ -1,7 +1,6 @@
-// CreateTodo.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TodoCalendar from './TodoCalendar'; // Importa el componente TodoCalendar
+import TodoCalendar from './TodoCalendar';
 
 const CreateTodo = ({ username }) => {
   const [title, setTitle] = useState('');
@@ -11,21 +10,20 @@ const CreateTodo = ({ username }) => {
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [holidays, setHolidays] = useState([]); // Para almacenar los días festivos
+  const [holidays, setHolidays] = useState([]);
 
-  // Obtener días festivos desde Calendarific
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY; 
+        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY;
         const response = await axios.get('https://calendarific.com/api/v2/holidays', {
           params: {
-            api_key: apiKey, // Usa la API key
-            country: 'MX', 
+            api_key: apiKey,
+            country: 'MX',
             year: 2025,
           },
         });
-        setHolidays(response.data.response.holidays); // Guarda los días festivos
+        setHolidays(response.data.response.holidays);
       } catch (error) {
         console.error('Error al obtener los días festivos:', error);
       }
@@ -34,24 +32,22 @@ const CreateTodo = ({ username }) => {
     fetchHolidays();
   }, []);
 
-  // Función para enviar la tarea a tu API
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      // Enviar datos de la tarea a tu API
-      const response = await axios.post('https://frontendbackendapp.onrender.com', {
+      const response = await axios.post('https://frontendbackendapp.onrender.com/todos', {
         title,
         description,
-        date,
+        date: date ? new Date(date).toISOString().split("T")[0] : null,
         priority,
         done,
         username,
       });
-      console.log('Tarea creada:', response.data);
 
-      // Limpiar campos después de la creación
+      console.log('Tarea creada:', response.data);
       setTitle('');
       setDescription('');
       setDate('');
@@ -59,44 +55,33 @@ const CreateTodo = ({ username }) => {
       setDone(false);
     } catch (err) {
       console.error('Error al crear la tarea:', err);
-      setError('No se pudo crear la tarea. Intenta nuevamente.');
+      setError(err.response ? err.response.data.message : 'No se pudo crear la tarea.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="app-container">
       <h2>Crear Tarea</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {loading && <div>Cargando...</div>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Título:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
         <div>
           <label>Descripción:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div>
           <label>Fecha:</label>
           <TodoCalendar selectedDate={date ? new Date(date) : new Date()} setSelectedDate={setDate} holidays={holidays} />
-          </div>
+        </div>
         <div>
           <label>Prioridad:</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-          >
+          <select value={priority} onChange={(e) => setPriority(e.target.value)}>
             <option value="Alta">Alta</option>
             <option value="Media">Media</option>
             <option value="Baja">Baja</option>
@@ -104,11 +89,7 @@ const CreateTodo = ({ username }) => {
         </div>
         <div>
           <label>Completado:</label>
-          <input
-            type="checkbox"
-            checked={done}
-            onChange={(e) => setDone(e.target.checked)}
-          />
+          <input type="checkbox" checked={done} onChange={(e) => setDone(e.target.checked)} />
         </div>
         <button type="submit" disabled={loading}>Crear Tarea</button>
       </form>
@@ -117,10 +98,6 @@ const CreateTodo = ({ username }) => {
 };
 
 export default CreateTodo;
-
-
-
-
 
 
 
