@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const UpdateTodo = ({ username, onUpdate }) => {
-  const { id: todoId } = useParams(); // Obtener el id desde la URL
+  const { id: todoId } = useParams(); 
   const [todo, setTodo] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   useEffect(() => {
     const fetchTodo = async () => {
       try {
-        const response = await axios.get(`https://frontendbackendapp.onrender.com${todoId}`);
+        const response = await axios.get(`https://frontendbackendapp.onrender.com/api/todos/${todoId}`);
         setTodo(response.data);
         setLoading(false);
       } catch (err) {
@@ -30,7 +30,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://frontendbackendapp.onrender.com${todoId}`, todo);
+      await axios.put(`https://frontendbackendapp.onrender.com/api/todos/${todoId}`, todo);
       onUpdate();
     } catch (err) {
       setError('Error al actualizar la tarea.');
@@ -70,8 +70,3 @@ const UpdateTodo = ({ username, onUpdate }) => {
 };
 
 export default UpdateTodo;
-
-
-
-
-

@@ -5,6 +5,7 @@ const Todo = require("../models/todo");
 // Crear una nueva tarea
 router.post("/", async (req, res) => {
   try {
+    console.log("Datos recibidos en el backend:", req.body);
     const { title, description, date, priority, done, username } = req.body;
 
     if (!title || !username) {
@@ -19,6 +20,7 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 });
+
 
 // Obtener todas las tareas de un usuario
 router.get("/", async (req, res) => {
