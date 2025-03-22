@@ -38,7 +38,7 @@ const CreateTodo = ({ username }) => {
     setError('');
 
     try {
-      const response = await axios.post('https://frontendbackendapp.onrender.com/todos', {
+      const response = await axios.post('https://frontendbackendapp.onrender.com', {
         title,
         description,
         date: date ? new Date(date).toISOString().split("T")[0] : null,

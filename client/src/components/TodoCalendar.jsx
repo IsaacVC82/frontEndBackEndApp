@@ -3,13 +3,14 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 
+
 const TodoCalendar = ({ selectedDate, setSelectedDate }) => {
   const [holidays, setHolidays] = useState([]);
 
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY; 
+        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY;
         const response = await axios.get('https://calendarific.com/api/v2/holidays', {
           params: {
             api_key: apiKey,

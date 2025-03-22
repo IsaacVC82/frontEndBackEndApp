@@ -11,7 +11,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   useEffect(() => {
     const fetchTodo = async () => {
       try {
-        const response = await axios.get(`https://frontendbackendapp.onrender.com/todos${todoId}`);
+        const response = await axios.get(`https://frontendbackendapp.onrender.com${todoId}`);
         setTodo(response.data);
         setLoading(false);
       } catch (err) {
@@ -30,7 +30,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://frontendbackendapp.onrender.com/todos${todoId}`, todo);
+      await axios.put(`https://frontendbackendapp.onrender.com${todoId}`, todo);
       onUpdate();
     } catch (err) {
       setError('Error al actualizar la tarea.');
