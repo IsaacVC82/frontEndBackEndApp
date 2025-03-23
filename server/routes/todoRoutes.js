@@ -21,7 +21,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 // Obtener todas las tareas de un usuario
 router.get("/", async (req, res) => {
   try {
@@ -38,19 +37,37 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Obtener una tarea por ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("Buscando tarea con ID:", id);
+
+    const todo = await Todo.findById(id);
+    if (!todo) {
+      return res.status(404).json({ message: "Tarea no encontrada" });
+    }
+
+    res.status(200).json(todo);
+  } catch (err) {
+    console.error("Error al obtener la tarea:", err);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+});
+
 // Actualizar una tarea
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, date, priority, done } = req.body;
 
-    console.log("ID recibido:", id);
+    console.log("ID recibido para actualizar:", id);
     console.log("Datos recibidos:", req.body);
 
     const updatedTodo = await Todo.findByIdAndUpdate(
       id,
       { title, description, date, priority, done },
-      { new: true } // Devuelve la tarea actualizada
+      { new: true, runValidators: true }
     );
 
     if (!updatedTodo) {
@@ -64,12 +81,10 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-
 // Eliminar una tarea
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-
     console.log("ID recibido para eliminar:", id);
 
     const deletedTodo = await Todo.findByIdAndDelete(id);
@@ -85,8 +100,8 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-
 module.exports = router;
+
 
 
 
