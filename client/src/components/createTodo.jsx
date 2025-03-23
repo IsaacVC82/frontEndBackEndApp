@@ -45,7 +45,9 @@ const CreateTodo = ({ username }) => {
         priority,
         done,
         username,
-      });
+      }, 
+    
+    );
 
       console.log('Tarea creada:', response.data);
       setTitle('');
@@ -62,12 +64,14 @@ const CreateTodo = ({ username }) => {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container fade-in">
       <h2>Crear Tarea</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {loading && <div>Cargando...</div>}
       <form onSubmit={handleSubmit}>
         <div>
+        {loading && <div className="loading-spinner"></div>}
+
           <label>Título:</label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>

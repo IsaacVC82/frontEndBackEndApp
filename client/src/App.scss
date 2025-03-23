@@ -20,6 +20,18 @@ body {
   border-radius: 20px;
   box-shadow: 0 8px 30px $shadow-color;
 }
+.fade-in {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 nav {
   background-color: $primary-color;
@@ -181,3 +193,14 @@ button:hover {
   100% { transform: rotate(360deg); }
 }
 
+form input, textarea, select, button {
+  transition: all 0.3s ease;
+}
+
+form input:hover, textarea:hover, select:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form button:active {
+  transform: scale(0.95);
+}
