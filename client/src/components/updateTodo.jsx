@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const UpdateTodo = ({ username, onUpdate }) => {
-  const { id: todoId } = useParams(); 
+  const { id: todoId } = useParams();
   const [todo, setTodo] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,32 +13,34 @@ const UpdateTodo = ({ username, onUpdate }) => {
       try {
         const response = await axios.get(`https://frontendbackendapp.onrender.com/api/todos/${todoId}`);
         setTodo(response.data);
-        setLoading(false);
       } catch (err) {
-        setError('Error al obtener la tarea.');
+        setError(`Error al obtener la tarea: ${err.response?.data?.message || err.message}`);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchTodo();
+    if (todoId) fetchTodo();
   }, [todoId]);
 
   const handleChange = (e) => {
-    setTodo({ ...todo, [e.target.name]: e.target.value });
+    setTodo((prevTodo) => ({ ...prevTodo, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://frontendbackendapp.onrender.com/api/todos/${todoId}`, todo);
-      onUpdate();
+      const response = await axios.put(`https://frontendbackendapp.onrender.com/api/todos/${todoId}`, todo, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      onUpdate(response.data);
     } catch (err) {
-      setError('Error al actualizar la tarea.');
+      setError(`Error al actualizar la tarea: ${err.response?.data?.message || err.message}`);
     }
   };
 
   if (loading) return <p>Cargando tarea...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div>
@@ -46,22 +48,11 @@ const UpdateTodo = ({ username, onUpdate }) => {
       <form onSubmit={handleSubmit}>
         <label>
           Título:
-          <input
-            type="text"
-            name="title"
-            value={todo.title}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="title" value={todo.title} onChange={handleChange} required />
         </label>
         <label>
           Descripción:
-          <textarea
-            name="description"
-            value={todo.description}
-            onChange={handleChange}
-            required
-          />
+          <textarea name="description" value={todo.description} onChange={handleChange} required />
         </label>
         <button type="submit">Actualizar</button>
       </form>
