@@ -7,6 +7,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   const [todo, setTodo] = useState({ title: "", description: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -41,11 +42,17 @@ const UpdateTodo = ({ username, onUpdate }) => {
         todo
       );
       console.log("Tarea actualizada con éxito.");
+      setSuccessMessage("Tarea actualizada correctamente.");
+      setTodo({ title: "", description: "" }); // Limpiar los campos
+
       if (typeof onUpdate === "function") {
         onUpdate();
       } else {
         console.warn("onUpdate no es una función.");
       }
+
+      // Limpiar el mensaje después de unos segundos
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
       console.error("Error al actualizar la tarea:", err);
       setError("Error al actualizar la tarea.");
@@ -58,6 +65,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
   return (
     <div>
       <h2>Actualizar Tarea</h2>
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       <form onSubmit={handleSubmit}>
         <label>
           Título:
@@ -85,5 +93,6 @@ const UpdateTodo = ({ username, onUpdate }) => {
 };
 
 export default UpdateTodo;
+
 
 
