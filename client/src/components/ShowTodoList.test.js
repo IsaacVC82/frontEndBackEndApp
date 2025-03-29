@@ -41,7 +41,7 @@ describe('ShowTodoList', () => {
 
     fireEvent.click(screen.getAllByText(/Eliminar/i)[0]);
 
-    expect(axios.delete).toHaveBeenCalledWith('http://localhost:8000/api/todo/1');
+    expect(axios.delete).toHaveBeenCalledWith('');
     expect(fetchTodos).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import TodoCalendar from './TodoCalendar';
 
 const UpdateTodo = ({ username, onUpdate }) => {
   const { id: todoId } = useParams();
-  const [todo, setTodo] = useState({ title: "", description: "" });
+  const [todo, setTodo] = useState({
+    title: "",
+    description: "",
+    date: "",
+    priority: "Baja",
+    done: false
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [holidays, setHolidays] = useState([]);
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -26,7 +34,24 @@ const UpdateTodo = ({ username, onUpdate }) => {
       }
     };
 
+    const fetchHolidays = async () => {
+      try {
+        const apiKey = process.env.REACT_APP_CALENDARIFIC_API_KEY;
+        const response = await axios.get('https://calendarific.com/api/v2/holidays', {
+          params: {
+            api_key: apiKey,
+            country: 'MX',
+            year: 2025,
+          },
+        });
+        setHolidays(response.data.response.holidays);
+      } catch (error) {
+        console.error('Error al obtener los días festivos:', error);
+      }
+    };
+
     fetchTodo();
+    fetchHolidays();
   }, [todoId]);
 
   const handleChange = (e) => {
@@ -39,11 +64,20 @@ const UpdateTodo = ({ username, onUpdate }) => {
       console.log("Enviando actualización para la tarea:", todoId, todo);
       await axios.put(
         `https://frontendbackendapp.onrender.com/api/todos/${todoId}`,
-        todo
+        {
+          ...todo,
+          date: todo.date ? new Date(todo.date).toISOString().split("T")[0] : null
+        }
       );
       console.log("Tarea actualizada con éxito.");
       setSuccessMessage("Tarea actualizada correctamente.");
-      setTodo({ title: "", description: "" }); // Limpiar los campos
+      setTodo({
+        title: "",
+        description: "",
+        date: "",
+        priority: "Baja",
+        done: false
+      }); // Limpiar los campos
 
       if (typeof onUpdate === "function") {
         onUpdate();
@@ -67,8 +101,8 @@ const UpdateTodo = ({ username, onUpdate }) => {
       <h2>Actualizar Tarea</h2>
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       <form onSubmit={handleSubmit}>
-        <label>
-          Título:
+        <div>
+          <label>Título:</label>
           <input
             type="text"
             name="title"
@@ -76,16 +110,45 @@ const UpdateTodo = ({ username, onUpdate }) => {
             onChange={handleChange}
             required
           />
-        </label>
-        <label>
-          Descripción:
+        </div>
+        <div>
+          <label>Descripción:</label>
           <textarea
             name="description"
             value={todo.description}
             onChange={handleChange}
             required
           />
-        </label>
+        </div>
+        <div>
+          <label>Fecha:</label>
+          <TodoCalendar
+            selectedDate={todo.date ? new Date(todo.date) : new Date()}
+            setSelectedDate={(date) => setTodo({ ...todo, date })}
+            holidays={holidays}
+          />
+        </div>
+        <div>
+          <label>Prioridad:</label>
+          <select
+            name="priority"
+            value={todo.priority}
+            onChange={handleChange}
+          >
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+        <div>
+          <label>Completado:</label>
+          <input
+            type="checkbox"
+            name="done"
+            checked={todo.done}
+            onChange={(e) => setTodo({ ...todo, done: e.target.checked })}
+          />
+        </div>
         <button type="submit">Actualizar</button>
       </form>
     </div>
@@ -93,6 +156,7 @@ const UpdateTodo = ({ username, onUpdate }) => {
 };
 
 export default UpdateTodo;
+
 
 
 
